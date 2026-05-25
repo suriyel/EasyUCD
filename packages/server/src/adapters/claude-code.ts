@@ -9,6 +9,7 @@ import {
   CliAdapter,
   GenerateRaw,
   GenerateOptions,
+  GEN_TIMEOUT_MS,
   findExecutable,
   spawnCapture,
   cleanChildEnv,
@@ -55,7 +56,7 @@ export class ClaudeCodeAdapter implements CliAdapter {
     let r;
     try {
       r = await spawnCapture(exe.command, args, {
-        timeoutMs: 120_000,
+        timeoutMs: GEN_TIMEOUT_MS,
         stdin: input,
         shell: exe.isBatch,
         env,
@@ -65,7 +66,7 @@ export class ClaudeCodeAdapter implements CliAdapter {
       throw new CliError(String(e?.message ?? e));
     }
 
-    if (r.timedOut) throw new TimeoutError("claude 生成超时（>120s）");
+    if (r.timedOut) throw new TimeoutError(`claude 生成超时（>${Math.round(GEN_TIMEOUT_MS / 1000)}s）`);
     if (r.code !== 0) {
       const blob = `${r.stderr}\n${r.stdout}`;
       if (/log ?in|auth|unauthor|credential|api key/i.test(blob)) {

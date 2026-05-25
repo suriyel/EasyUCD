@@ -5,6 +5,13 @@ import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join, delimiter } from "node:path";
 
+// 生成调用的子进程超时（毫秒）。精美风格输出明显更慢，默认 300s；
+// 可用环境变量 WTH_GEN_TIMEOUT_MS 覆盖（非正数/非法值回退默认）。
+export const GEN_TIMEOUT_MS = (() => {
+  const n = Number(process.env.WTH_GEN_TIMEOUT_MS);
+  return Number.isFinite(n) && n > 0 ? n : 300_000;
+})();
+
 export type GenerateRaw = {
   /** 模型输出的文本（claude 已从 JSON 中取出 result） */
   text: string;

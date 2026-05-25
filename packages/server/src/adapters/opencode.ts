@@ -13,6 +13,7 @@ import {
   CliAdapter,
   GenerateRaw,
   GenerateOptions,
+  GEN_TIMEOUT_MS,
   findExecutable,
   spawnCapture,
   NotInstalledError,
@@ -55,7 +56,7 @@ export class OpenCodeAdapter implements CliAdapter {
       let r;
       try {
         r = await spawnCapture(exe.command, args, {
-          timeoutMs: 120_000,
+          timeoutMs: GEN_TIMEOUT_MS,
           shell: exe.isBatch,
         });
       } catch (e: any) {
@@ -63,7 +64,7 @@ export class OpenCodeAdapter implements CliAdapter {
         throw new CliError(String(e?.message ?? e));
       }
 
-      if (r.timedOut) throw new TimeoutError("opencode 生成超时（>120s）");
+      if (r.timedOut) throw new TimeoutError(`opencode 生成超时（>${Math.round(GEN_TIMEOUT_MS / 1000)}s）`);
       if (r.code !== 0) throw new CliError(r.stderr.trim() || `opencode 退出码 ${r.code}`);
 
       return { text: r.stdout };

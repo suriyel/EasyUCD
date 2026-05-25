@@ -62,5 +62,14 @@ npm start                 # 等价于 wireframe-to-html start：Fastify 监听 1
 ## 配置与日志
 
 - 用户配置：`~/.config/wireframe-to-html/config.json`
-- 可编辑的 SKILL：`~/.config/wireframe-to-html/skills/wireframe-to-html/SKILL.md`
+- 模型资源方案（含端点/密钥/模型）：`~/.config/wireframe-to-html/models.json`（可在界面右上角「模型配置」弹窗维护）
+- 可编辑的 SKILL：`~/.config/wireframe-to-html/skills/wireframe-to-html/SKILL.md`（控制生成风格，已默认采用「精美成品级」风格）
 - 日志：`~/.config/wireframe-to-html/logs/`
+
+### 生成超时
+
+精美风格输出更耗时，单次生成的子进程超时默认 **300s**，可用环境变量覆盖：
+
+```bash
+$env:WTH_GEN_TIMEOUT_MS="240000"   # 单位毫秒；非法/非正数回退默认 300000
+```
