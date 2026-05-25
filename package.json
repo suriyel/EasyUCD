@@ -1,0 +1,39 @@
+{
+  "name": "wireframe-to-html",
+  "version": "0.1.0",
+  "description": "勾勒 + 文字描述 → HTML：Excalidraw 画板 + 本地 CLI（Claude Code / OpenCode）生成 HTML 预览",
+  "type": "module",
+  "private": false,
+  "bin": {
+    "wireframe-to-html": "bin/wireframe-to-html.js"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c blue,green \"npm run dev:web\" \"npm run dev:api\"",
+    "dev:web": "npm run dev -w @wth/web",
+    "dev:api": "cross-env WTH_DEV=1 PORT=3001 npm run dev -w @wth/server",
+    "build": "npm run gen:controls && npm run build -w @wth/web",
+    "typecheck": "npm run typecheck -w @wth/web && npm run typecheck -w @wth/server",
+    "start": "node bin/wireframe-to-html.js start",
+    "gen:controls": "node scripts/gen-controls.mjs",
+    "test": "tsx --test packages/web/src/lib/simplify.test.ts"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin",
+    "packages/web/dist",
+    "packages/server/src",
+    "assets",
+    "scripts"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

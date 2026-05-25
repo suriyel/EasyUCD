@@ -1,0 +1,250 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #1a1a1a;
+}
+
+.app {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.pane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+}
+
+.left-pane {
+  flex: 1 1 50%;
+  border-right: 1px solid #e0e0e0;
+}
+
+.right-pane {
+  flex: 1 1 50%;
+}
+
+.pane-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fafafa;
+  font-size: 13px;
+}
+
+.pane-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 画布：Excalidraw 需要一个有明确高度的容器 */
+.canvas-wrap {
+  flex: 1 1 auto;
+  position: relative;
+  min-height: 0;
+}
+
+.notes-wrap {
+  border-top: 1px solid #e0e0e0;
+  padding: 8px 12px;
+}
+
+.notes-wrap label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.notes-wrap textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 52px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+button {
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid #888;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #f0f0f0;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.generate-btn {
+  background: #1971c2;
+  color: #fff;
+  border-color: #1971c2;
+  font-weight: 600;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: #1864ab;
+}
+
+.cli-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.cli-selector button {
+  padding: 3px 10px;
+}
+
+.cli-selector button.active {
+  background: #1971c2;
+  color: #fff;
+  border-color: #1971c2;
+}
+
+.cli-selector button:disabled[data-unavailable="true"] {
+  text-decoration: line-through;
+}
+
+.preview-wrap {
+  flex: 1 1 auto;
+  position: relative;
+  min-height: 0;
+  background: #fff;
+}
+
+.preview-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+.statusbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-top: 1px solid #e0e0e0;
+  font-size: 12px;
+  background: #fafafa;
+  min-height: 30px;
+}
+
+.statusbar .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.statusbar.idle .dot {
+  background: #aaa;
+}
+.statusbar.loading .dot {
+  background: #f59f00;
+}
+.statusbar.done .dot {
+  background: #2f9e44;
+}
+.statusbar.error .dot {
+  background: #e03131;
+}
+
+.warning-bar {
+  padding: 6px 12px;
+  background: #fff4e6;
+  border-top: 1px solid #ffd8a8;
+  color: #d9480f;
+  font-size: 12px;
+}
+
+.error-banner {
+  padding: 8px 12px;
+  background: #fff5f5;
+  border-top: 1px solid #ffc9c9;
+  color: #c92a2a;
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+/* 右下角最近生成记录浮窗 */
+.recent-float {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 240px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  font-size: 11px;
+  z-index: 50;
+}
+
+.recent-float h3 {
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #666;
+  border-bottom: 1px solid #eee;
+}
+
+.recent-float ul {
+  margin: 0;
+  padding: 4px 10px 8px;
+  list-style: none;
+}
+
+.recent-float li {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
