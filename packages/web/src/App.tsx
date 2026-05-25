@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ExcalidrawCanvas, { type ExcalidrawAPI } from "./components/ExcalidrawCanvas";
 import NotesTextarea from "./components/NotesTextarea";
 import CliSelector from "./components/CliSelector";
+import ModelConfig from "./components/ModelConfig";
 import PreviewIframe from "./components/PreviewIframe";
 import StatusBar, { type Status } from "./components/StatusBar";
 import { simplify, type RawElement } from "./lib/simplify";
@@ -14,6 +15,7 @@ export default function App() {
   const [notes, setNotes] = useState("");
   const [cli, setCli] = useState("claude");
   const [health, setHealth] = useState<Health | null>(null);
+  const [showModelConfig, setShowModelConfig] = useState(false);
 
   const [status, setStatus] = useState<Status>("idle");
   const [html, setHtml] = useState("");
@@ -22,16 +24,21 @@ export default function App() {
   const [info, setInfo] = useState<{ elapsedMs: number; tokensUsed: number } | undefined>();
   const [recent, setRecent] = useState<Recent[]>([]);
 
-  // 启动时探测可用 CLI，选择默认/可用项
-  useEffect(() => {
+  // 启动时探测可用 CLI，选择默认/可用项（弹窗关闭后也复用以刷新状态）
+  const refreshHealth = (pickCli = true) => {
     getHealth()
       .then((h) => {
         setHealth(h);
+        if (!pickCli) return;
         const avail = h.clis.filter((c) => c.available).map((c) => c.name);
         if (h.defaultCli && (avail.includes(h.defaultCli) || h.mock)) setCli(h.defaultCli);
         else if (avail.length) setCli(avail[0]);
       })
       .catch(() => setHealth(null));
+  };
+
+  useEffect(() => {
+    refreshHealth();
   }, []);
 
   const pushRecent = (r: Recent) => setRecent((prev) => [r, ...prev].slice(0, 5));
@@ -96,11 +103,25 @@ export default function App() {
       <div className="pane right-pane">
         <div className="pane-header">
           <h2>HTML 预览</h2>
-          <CliSelector health={health} cli={cli} onChange={setCli} />
+          <div className="header-controls">
+            <CliSelector health={health} cli={cli} onChange={setCli} />
+            <button className="model-config-btn" onClick={() => setShowModelConfig(true)}>
+              ⚙ 模型配置
+            </button>
+          </div>
         </div>
         <PreviewIframe html={html} warning={warning} />
         <StatusBar status={status} info={info} error={errorMsg} />
       </div>
+
+      {showModelConfig && (
+        <ModelConfig
+          onClose={() => {
+            setShowModelConfig(false);
+            refreshHealth(false);
+          }}
+        />
+      )}
 
       {recent.length > 0 && (
         <div className="recent-float">

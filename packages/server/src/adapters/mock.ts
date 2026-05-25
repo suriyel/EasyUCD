@@ -1,7 +1,7 @@
 // Mock 适配器：不调用任何 CLI，根据简化 JSON 拼出占位 HTML。
 // 用于无配额消耗的全链路联调（环境变量 WTH_MOCK=1 时启用）。
 
-import { CliAdapter, GenerateRaw } from "./base.ts";
+import { CliAdapter, GenerateRaw, GenerateOptions } from "./base.ts";
 
 function escapeHtml(s: string): string {
   return String(s)
@@ -26,7 +26,7 @@ export class MockAdapter implements CliAdapter {
     return true;
   }
 
-  async generate(input: string): Promise<GenerateRaw> {
+  async generate(input: string, _skill?: string, _opts?: GenerateOptions): Promise<GenerateRaw> {
     let parsed: { elements?: El[]; notes?: string } = {};
     try {
       parsed = JSON.parse(input);

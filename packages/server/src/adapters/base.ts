@@ -12,11 +12,23 @@ export type GenerateRaw = {
   costUsd?: number;
 };
 
+/**
+ * 生成选项：由 generate 路由按「激活方案」解析后传入。
+ * - env：要叠加到子进程环境的变量（claude proxy 方案的 ANTHROPIC_* 等）
+ * - isolate：claude 是否加 --setting-sources project 隔离宿主 ~/.claude 设置
+ * - model：opencode 选用的 provider/model
+ */
+export type GenerateOptions = {
+  env?: Record<string, string>;
+  isolate?: boolean;
+  model?: string;
+};
+
 export interface CliAdapter {
   name: string;
   available(): Promise<boolean>;
-  /** input = 简化 JSON + notes 的字符串；skill = SKILL.md 内容 */
-  generate(input: string, skill: string): Promise<GenerateRaw>;
+  /** input = 简化 JSON + notes 的字符串；skill = SKILL.md 内容；opts = 激活方案派生选项 */
+  generate(input: string, skill: string, opts?: GenerateOptions): Promise<GenerateRaw>;
 }
 
 export class NotInstalledError extends Error {}

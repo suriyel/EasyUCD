@@ -121,7 +121,7 @@ CLI 工具的 SKILL 机制天然支持版本化、可被多次复用、可被多
 
 - 用户本机安装 Node ≥ 18、Claude Code CLI、OpenCode CLI（任选其一即可）
 - 通过 `npm i -g wireframe-to-html` 或类似方式安装本系统
-- 启动命令：`wireframe-to-html start` → 自动开 `http://localhost:5173`，浏览器打开即用
+- 启动命令：`wireframe-to-html start` → 自动开 `http://localhost:5273`，浏览器打开即用
 
 ---
 
@@ -511,9 +511,9 @@ $ wireframe-to-html start
 2. 检测 claude / opencode 是否可用
    都不可用 → 提示用户安装，退出
    只有一个可用 → 设为默认
-3. 启动 Fastify 服务（端口 5173）
+3. 启动 Fastify 服务（端口 5273）
 4. 启动静态文件服务（前端构建产物）
-5. 浏览器自动打开 http://localhost:5173
+5. 浏览器自动打开 http://localhost:5273
 6. 前端启动 → fetch /api/health → 显示可用 CLI 列表
 ```
 

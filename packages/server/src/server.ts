@@ -1,6 +1,6 @@
 // 本地 Node 服务入口（Fastify）。仅监听 127.0.0.1（§7.2）。
 // 开发：WTH_DEV=1 PORT=3001，开启 CORS、不托管静态资源（Vite 负责前端）。
-// 生产：默认 PORT=5173，托管 packages/web/dist 并提供 SPA 回退。
+// 生产：默认 PORT=5273，托管 packages/web/dist 并提供 SPA 回退。
 
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -15,9 +15,10 @@ import { generateRoutes } from "./routes/generate.ts";
 import { configRoutes } from "./routes/config.ts";
 import { skillsRoutes } from "./routes/skills.ts";
 import { healthRoutes } from "./routes/health.ts";
+import { modelsRoutes } from "./routes/models.ts";
 
 const HOST = "127.0.0.1";
-const PORT = Number(process.env.PORT || 5173);
+const PORT = Number(process.env.PORT || 5273);
 const DEV = process.env.WTH_DEV === "1";
 
 function openBrowser(url: string): void {
@@ -47,6 +48,7 @@ async function main(): Promise<void> {
   await app.register(configRoutes);
   await app.register(skillsRoutes);
   await app.register(healthRoutes);
+  await app.register(modelsRoutes);
 
   if (!DEV && existsSync(webDist)) {
     await app.register(fastifyStatic, { root: webDist });

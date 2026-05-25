@@ -13,6 +13,7 @@ export const skillName = "wireframe-to-html";
 
 export const configDir = join(homedir(), ".config", "wireframe-to-html");
 export const configFile = join(configDir, "config.json");
+export const modelsFile = join(configDir, "models.json");
 export const skillsDir = join(configDir, "skills");
 export const logsDir = join(configDir, "logs");
 export const skillDir = join(skillsDir, skillName);

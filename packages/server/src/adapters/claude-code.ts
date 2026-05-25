@@ -8,6 +8,7 @@
 import {
   CliAdapter,
   GenerateRaw,
+  GenerateOptions,
   findExecutable,
   spawnCapture,
   cleanChildEnv,
@@ -39,12 +40,17 @@ export class ClaudeCodeAdapter implements CliAdapter {
     }
   }
 
-  async generate(input: string, skill: string): Promise<GenerateRaw> {
+  async generate(input: string, skill: string, opts?: GenerateOptions): Promise<GenerateRaw> {
     const exe = findExecutable("claude");
     if (!exe) throw new NotInstalledError("claude CLI 未安装");
 
     const args = ["-p", "--output-format", "json", "--tools", "", "--append-system-prompt", skill];
-    if (ISOLATE) args.push("--setting-sources", "project", "--settings", "{}");
+    // 全局 WTH_CLAUDE_ISOLATE 或激活 proxy 方案（opts.isolate）→ 只加载工程级设置，
+    // 跳过宿主 ~/.claude 用户设置，避免其托管/代理配置干扰自定义端点（根治 403）。
+    if (ISOLATE || opts?.isolate) args.push("--setting-sources", "project", "--settings", "{}");
+
+    // 激活方案的 env 最后叠加，覆盖用户 shell 里已导出的同名变量。
+    const env = { ...cleanChildEnv(), ...(opts?.env ?? {}) };
 
     let r;
     try {
@@ -52,7 +58,7 @@ export class ClaudeCodeAdapter implements CliAdapter {
         timeoutMs: 120_000,
         stdin: input,
         shell: exe.isBatch,
-        env: cleanChildEnv(),
+        env,
       });
     } catch (e: any) {
       if (e?.code === "ENOENT") throw new NotInstalledError("claude CLI 未安装");

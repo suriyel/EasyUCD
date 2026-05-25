@@ -4,11 +4,13 @@ import type { FastifyInstance } from "fastify";
 import { getAdapter } from "../adapters/index.ts";
 import {
   extractHtml,
+  type GenerateOptions,
   NotInstalledError,
   NotAuthedError,
   TimeoutError,
 } from "../adapters/base.ts";
 import { readSkill } from "../init.ts";
+import { getActiveProfile, buildClaudeProfileEnv } from "../profiles.ts";
 
 const MAX_ELEMENTS = 200;
 
@@ -44,13 +46,32 @@ export async function generateRoutes(app: FastifyInstance): Promise<void> {
     const adapter = getAdapter(cli);
     const skill = await readSkill();
 
+    // 按激活方案派生生成选项：claude proxy → 注入 ANTHROPIC_* 并隔离宿主设置；opencode → 选模型。
+    let opts: GenerateOptions = {};
+    let profileId: string | undefined;
+    if (cli === "opencode") {
+      const p = await getActiveProfile("opencode");
+      profileId = p?.id;
+      opts = { model: p?.model || undefined };
+    } else {
+      const p = await getActiveProfile("claude");
+      profileId = p?.id;
+      opts = { env: buildClaudeProfileEnv(p), isolate: p?.kind === "proxy" };
+    }
+
     const started = Date.now();
     try {
-      const raw = await adapter.generate(input, skill);
+      const raw = await adapter.generate(input, skill, opts);
       const elapsedMs = Date.now() - started;
       const { html, ok } = extractHtml(raw.text);
       req.log.info(
-        { elements: elements.length, cli: adapter.name, elapsedMs, tokensUsed: raw.tokensUsed ?? 0 },
+        {
+          elements: elements.length,
+          cli: adapter.name,
+          profile: profileId,
+          elapsedMs,
+          tokensUsed: raw.tokensUsed ?? 0,
+        },
         "generate ok",
       );
       return reply.send({

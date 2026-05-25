@@ -12,6 +12,7 @@ import {
   skillFile,
   skillName,
 } from "./paths.ts";
+import { ensureModelsInit } from "./profiles.ts";
 
 export type CliName = "claude" | "opencode";
 export type AppConfig = { defaultCli: CliName; skillName: string };
@@ -30,6 +31,8 @@ export async function ensureInit(): Promise<void> {
   if (!existsSync(configFile)) {
     await writeFile(configFile, JSON.stringify(DEFAULT_CONFIG, null, 2), "utf8");
   }
+
+  await ensureModelsInit();
 }
 
 export async function readConfig(): Promise<AppConfig> {

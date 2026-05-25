@@ -12,6 +12,7 @@ import { randomUUID } from "node:crypto";
 import {
   CliAdapter,
   GenerateRaw,
+  GenerateOptions,
   findExecutable,
   spawnCapture,
   NotInstalledError,
@@ -39,7 +40,7 @@ export class OpenCodeAdapter implements CliAdapter {
     }
   }
 
-  async generate(input: string, skill: string): Promise<GenerateRaw> {
+  async generate(input: string, skill: string, opts?: GenerateOptions): Promise<GenerateRaw> {
     const exe = findExecutable("opencode");
     if (!exe) throw new NotInstalledError("opencode CLI 未安装");
 
@@ -47,7 +48,10 @@ export class OpenCodeAdapter implements CliAdapter {
     await writeFile(promptFile, `${skill}\n\n---\n\n用户输入：\n${input}`, "utf8");
 
     try {
-      const args = ["run", "--file", promptFile, INSTRUCTION];
+      // 激活方案指定了 model 时附 --model（值来自方案，非用户自由文本，仍无注入面）。
+      const args = ["run", "--file", promptFile];
+      if (opts?.model) args.push("--model", opts.model);
+      args.push(INSTRUCTION);
       let r;
       try {
         r = await spawnCapture(exe.command, args, {

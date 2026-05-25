@@ -63,6 +63,76 @@ export function getSkills(): Promise<{ skills: string[]; dir: string }> {
   return fetch("/api/skills").then((r) => parse(r));
 }
 
+// ---------- 模型资源方案（model profiles） ----------
+
+export type ClaudeModels = {
+  primary?: string;
+  haiku?: string;
+  sonnet?: string;
+  opus?: string;
+  reasoning?: string;
+};
+
+export type ClaudeProfile = {
+  id: string;
+  name: string;
+  kind: "login" | "proxy";
+  baseUrl?: string;
+  authToken?: string;
+  models?: ClaudeModels;
+};
+
+export type OpenCodeProfile = { id: string; name: string; model: string };
+
+export type ToolName = "claude" | "opencode";
+
+export type ModelStore = {
+  claude: { active: string; profiles: ClaudeProfile[] };
+  opencode: { active: string; profiles: OpenCodeProfile[] };
+};
+
+export const LOGIN_PROFILE_ID = "anthropic-login";
+
+export function getModels(): Promise<ModelStore> {
+  return fetch("/api/models").then((r) => parse<ModelStore>(r));
+}
+
+export function getOpencodeModels(): Promise<{ models: string[] }> {
+  return fetch("/api/models/opencode/list").then((r) => parse<{ models: string[] }>(r));
+}
+
+export function saveProfile(
+  tool: ToolName,
+  id: string,
+  body: ClaudeProfile | OpenCodeProfile,
+): Promise<{ ok: boolean; store: ModelStore }> {
+  return fetch(`/api/models/${tool}/${encodeURIComponent(id)}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(body),
+  }).then((r) => parse(r));
+}
+
+export function deleteProfile(
+  tool: ToolName,
+  id: string,
+): Promise<{ ok: boolean; store: ModelStore }> {
+  return fetch(`/api/models/${tool}/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  }).then((r) => parse(r));
+}
+
+export function setActiveProfile(
+  tool: ToolName,
+  id: string,
+): Promise<{ ok: boolean; store: ModelStore }> {
+  return fetch(`/api/models/${tool}/active`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ id }),
+  }).then((r) => parse(r));
+}
+
 export function generate(payload: {
   elements: SimplifiedElement[];
   notes: string;

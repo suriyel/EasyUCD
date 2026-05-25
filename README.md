@@ -14,10 +14,10 @@
 ```bash
 npm install
 npm run gen:controls      # 生成预设控件库 .excalidrawlib
-npm run dev               # 前端 5173 + 后端 3001（Vite 代理 /api → 3001）
+npm run dev               # 前端 5273 + 后端 3001（Vite 代理 /api → 3001）
 ```
 
-打开 http://localhost:5173 。
+打开 http://localhost:5273 。
 
 ### 不消耗模型配额的全链路联调
 
@@ -47,7 +47,7 @@ npm start
 
 ```bash
 npm run build             # 生成控件库 + 构建前端到 packages/web/dist
-npm start                 # 等价于 wireframe-to-html start：Fastify 监听 127.0.0.1:5173
+npm start                 # 等价于 wireframe-to-html start：Fastify 监听 127.0.0.1:5273
 ```
 
 ## 架构
