@@ -272,6 +272,49 @@ body {
   max-width: 100%;
 }
 
+/* 自定义控件项：包一层以承载右上角删除按钮（hover 时浮现） */
+.palette-item-wrap {
+  position: relative;
+  display: flex;
+}
+
+.palette-item-wrap .palette-item {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.palette-del {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #bbb;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s, background 0.12s;
+}
+
+.palette-item-wrap:hover .palette-del,
+.palette-del:focus-visible {
+  opacity: 1;
+}
+
+.palette-del:hover {
+  background: #fde0e0;
+  color: #e03131;
+}
+
 .notes-wrap {
   border-top: 1px solid #e0e0e0;
   padding: 8px 12px;
