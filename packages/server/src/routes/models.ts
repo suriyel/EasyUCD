@@ -33,9 +33,9 @@ async function listOpencodeModels(): Promise<string[]> {
     return [];
   }
   try {
-    const r = await spawnCapture(exe.command, ["models"], {
+    const r = await spawnCapture(exe.command, [...exe.prefixArgs, "models"], {
       timeoutMs: 15_000,
-      shell: exe.isBatch,
+      shell: exe.shell,
     });
     const models =
       r.code === 0

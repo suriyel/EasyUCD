@@ -31,9 +31,9 @@ export class ClaudeCodeAdapter implements CliAdapter {
     const exe = findExecutable("claude");
     if (!exe) return false;
     try {
-      const r = await spawnCapture(exe.command, ["--version"], {
+      const r = await spawnCapture(exe.command, [...exe.prefixArgs, "--version"], {
         timeoutMs: 10_000,
-        shell: exe.isBatch,
+        shell: exe.shell,
       });
       return r.code === 0;
     } catch {
@@ -55,10 +55,10 @@ export class ClaudeCodeAdapter implements CliAdapter {
 
     let r;
     try {
-      r = await spawnCapture(exe.command, args, {
+      r = await spawnCapture(exe.command, [...exe.prefixArgs, ...args], {
         timeoutMs: GEN_TIMEOUT_MS,
         stdin: input,
-        shell: exe.isBatch,
+        shell: exe.shell,
         env,
       });
     } catch (e: any) {
