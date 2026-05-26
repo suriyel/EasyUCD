@@ -1,75 +1,118 @@
-# wireframe-to-html（线框图转 HTML）
+# EasyUCD —— 画出界面，一键变网页
 
-在纯文本大模型约束下，用「勾勒 + 文字描述」表达 UI 布局意图，自动生成 HTML 用于预览与后续开发。
+把脑子里的页面「画」出来或「说」出来，几秒钟后就得到一个能在浏览器里打开的真实网页。
 
-左侧 Excalidraw 画板（内置预设控件库）+ 文字补充 → 前端把场景简化为 JSON → 本地 Node 服务调用本机 CLI（Claude Code / OpenCode）生成 HTML → 右侧 iframe 即时预览。
+不用写代码，也不用懂前端：像搭积木一样摆好按钮、输入框、表格这些界面元件（下面简称「控件」），或者直接用一句话描述你想要的页面，点一下「生成 HTML」，AI 就帮你把它变成可预览、可下载的网页。
 
-## 环境要求
+> EasyUCD = Easy UCD（以用户为中心的设计）。它想让「有个想法 → 看到能用的页面」这件事，变得简单又快。
 
-- Node ≥ 18
-- 任选其一（生成时需要）：[Claude Code CLI](https://docs.claude.com/claude-code) 或 [OpenCode CLI](https://opencode.ai)
+## 适合谁
 
-## 安装与开发
+- **产品 / 运营**：把想法快速变成能点开看的页面，拿去对需求、做评审
+- **设计师**：先用草图定好布局，立刻看到它变成网页的样子
+- **开发者**：把界面初稿一键变成 HTML，省去从零搭页面的时间
+
+## 它怎么用（一句话版）
+
+> **摆控件 / 写描述 → （可选）补一句说明 → 点「生成 HTML」**，右边几秒后出现真实网页，可下载、可复制。
+
+---
+
+## 准备工作
+
+只需两步：装 EasyUCD，再装一个帮你生成网页的 AI 助手。
+
+### 第一步：装 EasyUCD
+
+**方式 A：双击安装包（最省事，Windows）**
+
+拿到 `EasyUCD-Setup.exe` 后双击，它会解压出一个 `EasyUCD` 文件夹；进去双击 `EasyUCD.exe`，浏览器就会自动打开界面。
+
+- 自带运行环境，电脑无需额外安装别的东西
+- 关掉那个黑色命令行窗口，就停止运行
+
+> 手上没有现成安装包？在源码目录运行 `npm run package` 就能自己打一个出来。
+
+**方式 B：用源码运行（适合开发者，需要 Node 18 及以上）**
 
 ```bash
 npm install
-npm run gen:controls      # 生成预设控件库 .excalidrawlib
-npm run dev               # 前端 5273 + 后端 3001（Vite 代理 /api → 3001）
-```
-
-打开 http://localhost:5273 。
-
-### 不消耗模型配额的全链路联调
-
-设置环境变量 `WTH_MOCK=1` 启动后端，`/api/generate` 会走内置 Mock 适配器，根据画板元素拼出占位 HTML，不调用任何 CLI：
-
-```bash
-# PowerShell
-$env:WTH_MOCK=1; $env:WTH_DEV=1; $env:PORT=3001; npx tsx packages/server/src/server.ts
-```
-
-### 对接第三方 Anthropic 兼容端点（如 MiniMax）
-
-Claude Code 适配器直接继承服务进程的环境变量，因此无需改代码即可指向兼容端点：
-
-```bash
-# PowerShell（密钥仅放在环境变量，切勿写入任何文件）
-$env:ANTHROPIC_BASE_URL="https://api.minimaxi.com/anthropic"
-$env:ANTHROPIC_AUTH_TOKEN="<your-key>"   # 作为 Bearer 发送
-$env:ANTHROPIC_MODEL="MiniMax-M2.7"
-$env:WTH_CLAUDE_ISOLATE="1"               # 跳过宿主 ~/.claude 用户设置，避免其代理/托管配置干扰
+npm run build
 npm start
 ```
 
-说明：`WTH_CLAUDE_ISOLATE=1` 时适配器加 `--setting-sources project`，让 claude 只加载工程级设置；适配器还会自动剥离 `CLAUDE_CODE_*`，避免从某个 Claude Code 会话内启动时被当成子代理。默认（不设这些变量）走用户已登录的 claude，无需任何配置。
+然后用浏览器打开 http://localhost:5273 。
 
-## 生产启动
+### 第二步：装一个 AI 助手（负责把界面变成网页）
 
-```bash
-npm run build             # 生成控件库 + 构建前端到 packages/web/dist
-npm start                 # 等价于 wireframe-to-html start：Fastify 监听 127.0.0.1:5273
-```
+EasyUCD 本身不「思考」，真正把你的界面变成网页代码的，是本机的一个 AI 命令行工具，**二选一装好其中一个**即可：
 
-## 架构
+- [Claude Code](https://docs.claude.com/claude-code)
+- [OpenCode](https://opencode.ai)
 
-详见 [`design-doc.md`](./design-doc.md)。关键模块：
+装好后登录，或在界面右上角的 **「模型配置」** 里填上你自己的模型信息。界面右上角可以随时切换用哪一个。
 
-- `packages/web` — React + Vite SPA（Excalidraw 画板、JSON 简化器、HTML 预览）
-- `packages/server` — Fastify 服务（CLI 适配层、SKILL 加载、配置/健康检查）
-- `assets/skills/wireframe-to-html/SKILL.md` — 注入 CLI 的生成约束（首次启动复制到 `~/.config/wireframe-to-html/`）
-- `scripts/gen-controls.mjs` — 生成 `.excalidrawlib` 预设控件库
+---
 
-## 配置与日志
+## 完整示例：5 分钟做一个登录页
 
-- 用户配置：`~/.config/wireframe-to-html/config.json`
-- 模型资源方案（含端点/密钥/模型）：`~/.config/wireframe-to-html/models.json`（可在界面右上角「模型配置」弹窗维护）
-- 可编辑的 SKILL：`~/.config/wireframe-to-html/skills/wireframe-to-html/SKILL.md`（控制生成风格，已默认采用「精美成品级」风格）
-- 日志：`~/.config/wireframe-to-html/logs/`
+打开 EasyUCD，界面分两半：**左边是画板，右边是网页预览**。
 
-### 生成超时
+**1. 把登录页「画」出来（两种方式任选）**
 
-精美风格输出更耗时，单次生成的子进程超时默认 **300s**，可用环境变量覆盖：
+- *手动摆*：在左侧控件库里点一下「标题」「输入框」「按钮」，它们就出现在画布上；拖动摆成上下一列，双击文字分别改成「登录」「用户名」「密码」「登录」。
+- *一句话生成*：在左下角 **「文字生成线框图」** 框里写一句话——
 
-```bash
-$env:WTH_GEN_TIMEOUT_MS="240000"   # 单位毫秒；非法/非正数回退默认 300000
-```
+  > 一个登录页，含标题、用户名、密码、登录按钮
+
+  点「生成线框图」，画板会自动帮你摆好。（注意：这会替换画板上已有的内容）
+
+**2. 补充一句说明（可选）**
+
+在 **「文字补充」** 框里写清楚交互规则，比如：
+
+> 登录按钮在两个输入框都填了之后才能点
+
+**3. 生成网页**
+
+点左下角的 **「生成 HTML」**，等几秒，右边就出现做好的登录页网页。
+
+**4. 拿走结果**
+
+满意就点 **「下载 HTML」** 存成文件（双击即可用浏览器打开），或 **「复制源码」** 直接拷走代码；不满意就改改画板或说明，再点一次「生成 HTML」。
+
+> **再来一个例子**：想做后台页面？一句话写「一个用户管理页，顶部一个搜索框，下面一个用户表格，右上角放新增按钮」，同样几秒出页面。
+
+---
+
+## 两种「画界面」的方式
+
+| 方式 | 怎么做 | 适合 |
+|------|--------|------|
+| **点控件摆放** | 左侧有近 90 个常用控件，按用途分成 10 类（容器、导航、输入、表单、展示、数据、动作、媒体……）。点一下插入，自由摆放、改文字 | 心里已有明确布局 |
+| **一句话生成** | 在「文字生成线框图」里描述页面，自动摆好控件 | 快速起个草稿，再动手微调 |
+
+两者可以混着用：先用一句话起稿，再点控件补充细节。
+
+## 生成之后能做什么
+
+- **下载 HTML**：存成 `.html` 文件，双击就能在浏览器里打开
+- **复制源码**：直接拷走代码，拿去继续开发
+- **刷新预览**：重新渲染右侧页面
+- **模型配置**（右上角）：管理 AI 的接入信息（地址 / 密钥 / 模型），并在 Claude / OpenCode 之间切换
+
+---
+
+## 常见问题
+
+**生成要多久？** 一般十几秒。如果选了更精细的成品风格会久一些，默认最多等 5 分钟。
+
+**点了没反应 / 生成失败？** 多半是 AI 助手没装好或没登录。检查第二步，或在右上角切换 Claude / OpenCode 再试。
+
+**怎么让生成结果更准？** 画得越清楚越好：控件摆放整齐、文字写明白、用「文字补充」把交互规则交代清楚。
+
+**想先空跑看看流程，暂时不接 AI？** 用源码方式启动时加上 `WTH_MOCK=1`，生成会返回占位内容、不调用真实模型，适合先把操作跑通熟悉一下。
+
+---
+
+想了解内部是怎么实现的，见 [`design-doc.md`](./design-doc.md)。
