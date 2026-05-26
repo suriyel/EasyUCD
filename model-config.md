@@ -65,7 +65,7 @@ OpenCode 适配器：方案指定 `model` 时追加 `--model <model>`。
 
 ### 前端（packages/web）
 - `src/api.ts` — 新增类型 `ModelStore/ClaudeProfile/OpenCodeProfile` 与 `getModels/saveProfile/deleteProfile/setActiveProfile/getOpencodeModels`。
-- `src/components/ModelConfig.tsx`（新）— 右上角「⚙ 模型配置」弹窗：工具 Tab（Claude / OpenCode）+ 左列方案卡片列表 + 右列详情编辑（Claude login 只读说明 / proxy 含 Base URL、Auth Token、5 个模型槽；OpenCode model + datalist）+ 保存 / 设为激活 / 删除 / 新建 + dirty 切换确认。
+- `src/components/ModelConfig.tsx`（新）— 右上角「⚙ 模型配置」弹窗：工具 Tab（Claude / OpenCode）+ 左列方案卡片列表 + 右列详情编辑（Claude login 只读说明 / proxy 含 Base URL、Auth Token、5 个模型槽；OpenCode 用原生 `select` 选已认证模型（源自 `opencode models`）+ 手动填写输入框兜底）+ 保存 / 设为激活 / 删除 / 新建 + dirty 切换确认。
 - `src/App.tsx` — 右栏标题加按钮与弹窗开关，关闭后刷新 health。
 - `src/index.css` — 模态与方案卡片样式（沿用 `#1971c2` 主色 / system-ui）。
 

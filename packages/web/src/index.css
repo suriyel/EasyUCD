@@ -569,7 +569,8 @@ button:disabled {
   color: #666;
 }
 
-.profile-detail input {
+.profile-detail input,
+.profile-detail select {
   font: inherit;
   font-size: 13px;
   padding: 6px 8px;

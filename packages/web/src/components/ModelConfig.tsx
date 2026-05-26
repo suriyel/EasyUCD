@@ -340,22 +340,34 @@ export default function ModelConfig({ onClose }: Props) {
                 {tool === "opencode" && ocDraft && (
                   <>
                     <label className="row">
-                      <span>Model</span>
+                      <span>Model（已认证可用）</span>
+                      <select
+                        value={ocModels.includes(ocDraft.model) ? ocDraft.model : ""}
+                        onChange={(e) => setField({ model: e.target.value })}
+                      >
+                        <option value="" disabled>
+                          {ocModels.length
+                            ? "选择一个已认证模型…"
+                            : "（无已认证模型，请先 opencode auth login）"}
+                        </option>
+                        {ocModels.map((m) => (
+                          <option key={m} value={m}>
+                            {m}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="row">
+                      <span>或手动填写 provider/model</span>
                       <input
-                        list="oc-models"
                         value={ocDraft.model ?? ""}
                         placeholder="provider/model"
                         onChange={(e) => setField({ model: e.target.value })}
                       />
-                      <datalist id="oc-models">
-                        {ocModels.map((m) => (
-                          <option key={m} value={m} />
-                        ))}
-                      </datalist>
                     </label>
                     <div className="login-note">
                       启动命令：<code>opencode run --model {ocDraft.model || "<model>"} …</code>
-                      {ocModels.length === 0 && "（未检测到 opencode models 输出，可手动填写）"}
+                      列表来自 <code>opencode models</code>（仅已认证 provider）。
                     </div>
                   </>
                 )}
