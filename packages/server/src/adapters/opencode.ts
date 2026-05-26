@@ -31,9 +31,9 @@ export class OpenCodeAdapter implements CliAdapter {
     const exe = findExecutable("opencode");
     if (!exe) return false;
     try {
-      const r = await spawnCapture(exe.command, ["--version"], {
+      const r = await spawnCapture(exe.command, [...exe.prefixArgs, "--version"], {
         timeoutMs: 10_000,
-        shell: exe.isBatch,
+        shell: exe.shell,
       });
       return r.code === 0;
     } catch {
@@ -55,9 +55,9 @@ export class OpenCodeAdapter implements CliAdapter {
       args.push(INSTRUCTION);
       let r;
       try {
-        r = await spawnCapture(exe.command, args, {
+        r = await spawnCapture(exe.command, [...exe.prefixArgs, ...args], {
           timeoutMs: GEN_TIMEOUT_MS,
-          shell: exe.isBatch,
+          shell: exe.shell,
         });
       } catch (e: any) {
         if (e?.code === "ENOENT") throw new NotInstalledError("opencode CLI 未安装");

@@ -35,17 +35,28 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 
 **逐个控件按下表映射到对应语义化 HTML 元素，不得用 `<div>`/`<span>` 笼统替代有专门语义的控件**（视觉样式可自由发挥，但语义标签不可降级）：
 
+<!-- generated:controls -->
 | type | HTML |
 |------|------|
-| Page | `<body>` 顶层主区，或 `<main>` |
+| Page | `<body>` 顶层主区 或 `<main>` |
 | Section | `<section>` |
-| Card | `<div class="card">`（卡片容器） |
+| Card | `<div class="card">` |
 | Modal | `<dialog open>` 或 `<div role="dialog">` |
+| Drawer | `<aside>` 或侧向 `<dialog>` |
+| Collapse | `<details><summary>…</summary></details>` |
+| Splitter | `display:flex` + 拖拽分隔条 |
 | Header | `<header>` |
 | Footer | `<footer>` |
 | Nav | `<nav>` |
 | Tabs | `<div role="tablist">` + 若干 `<button role="tab">` |
 | Breadcrumb | `<nav aria-label="breadcrumb"><ol><li>…` |
+| Menu | `<nav>` + `<ul>` 菜单 |
+| Sidebar | `<aside>` 侧栏导航 |
+| Toolbar | `<div role="toolbar">` |
+| Pagination | `<nav aria-label="pagination"><ul><li>…` |
+| Steps | `<ol>` 步骤列表 |
+| Anchor | `<nav>` 锚点目录 |
+| Dropdown | `<details>` / menu button |
 | Input | `<input type="text">`（text 作 placeholder 或前置 `<label>`） |
 | Password | `<input type="password">` |
 | Textarea | `<textarea>` |
@@ -53,17 +64,68 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 | Checkbox | `<label><input type="checkbox">…</label>` |
 | Radio | `<label><input type="radio">…</label>` |
 | Switch | `<label><input type="checkbox" role="switch">…</label>` |
+| Slider | `<input type="range">` |
+| NumberInput | `<input type="number">` |
+| DatePicker | `<input type="date">` |
+| TimePicker | `<input type="time">` |
+| DateRange | 两个 `<input type="date">` |
+| Upload | `<input type="file">`（拖拽上传区） |
+| Rate | 星级 `role="radiogroup"`（若干 `<input type="radio">`） |
+| ColorPicker | `<input type="color">` |
+| SearchBox | `<input type="search">` |
+| Cascader | 级联 `<select>`（多级联动） |
+| AutoComplete | `<input list="...">` + `<datalist>` |
+| TagInput | 标签 + `<input>`（可输入多标签） |
+| Form | `<form>`（包裹其内表单控件） |
+| FormItem | `<div class="form-item">` label + control |
+| TreeSelect | 树形 combobox（`<select>` 衍生，可勾选树） |
+| TreeTable | `<table>` + 可展开行（树形表格） |
+| MultiSelect | `<select multiple>` / 带 tag 多选 |
+| CheckboxGroup | 一组 `<label><input type="checkbox">` |
+| RadioGroup | 一组 `<label><input type="radio">` |
+| Transfer | 双 `<ul>` + 移动按钮（穿梭框） |
+| Segmented | 分段 `role="radiogroup"`（segmented） |
+| Mentions | `<textarea>` + @ 提及候选 |
+| CheckableTag | 可勾选 `<span class="tag">`（`<label>` 包裹） |
 | Heading | `<h1>`～`<h3>`（按层级/尺寸择一） |
 | Text | `<p>` |
-| Image | `<img alt="…">`（无真实地址用占位，如 `https://placehold.co/WxH`） |
+| Image | `<img alt="…">`（占位 `https://placehold.co/WxH`） |
 | Icon | `<span aria-hidden="true">`（图标占位） |
 | Avatar | 圆形 `<img alt="…">` 或占位 `<div>` |
 | Badge | `<span class="badge">` |
-| Button | `<button>` |
-| Link | `<a href="#">` |
+| Tag | `<span class="tag">` |
+| Divider | `<hr>` |
+| Alert | `<div role="alert">` |
+| Toast | `<div role="status">`（通知/吐司） |
+| Tooltip | `<div role="tooltip">` |
+| Popover | `<div role="dialog">`（popover） |
+| Popconfirm | 确认气泡（popover + 确认/取消按钮） |
+| Progress | `<progress>` 或 `<div role="progressbar">` |
+| ProgressCircle | 环形 `<div role="progressbar">` |
+| Spinner | 加载指示器 `<div role="status">` |
+| Skeleton | 骨架占位 `<div class="skeleton">` |
+| Empty | 空状态 `<div>`（插画 + 文案） |
+| Result | 结果页 `<div>`（状态图 + 标题 + 操作） |
 | List | `<ul>` / `<ol>` + `<li>` |
 | Table | `<table>` + `<thead>` / `<tbody>` |
 | Grid | `display:grid` 的容器 `<div>` + 网格项 |
+| Tree | 树形 `<ul>`（嵌套缩进） |
+| Timeline | `<ol>` 时间线（节点 + 内容） |
+| Statistic | 统计卡 `<div>`（标题 + 数值） |
+| Descriptions | `<dl>` + `<dt>` / `<dd>` |
+| Calendar | 日历网格 `<table>` / `<div>` |
+| Carousel | 轮播 `<div>`（图片 + 指示点） |
+| BarChart | 图表占位 `<div>`（柱状） |
+| LineChart | 图表占位 `<div>`（折线） |
+| PieChart | 图表占位 `<div>`（饼图） |
+| Button | `<button>` |
+| Link | `<a href="#">` |
+| ButtonGroup | 一组 `<button>`（相邻分段） |
+| FAB | 圆形浮动 `<button>`（FloatButton） |
+| Video | `<video controls>` |
+| Audio | `<audio controls>` |
+| Map | 地图占位 `<div>`（街道 + 标记） |
+<!-- /generated:controls -->
 
 - 表单类控件若被同一容器包裹，整体用 `<form>` 包起来更语义化。
 - 控件的 `text` 用作按钮文案、标签、占位符或标题内容。
