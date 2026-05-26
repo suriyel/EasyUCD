@@ -32,6 +32,7 @@ let insertSeq = 0;
 export default function ControlPalette({ api }: Props) {
   const [items, setItems] = useState<CatalogItem[]>([]);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -46,10 +47,18 @@ export default function ControlPalette({ api }: Props) {
     };
   }, []);
 
-  // 按分类分组（保留 catalog 内顺序）
+  // 归一化查询：子串匹配中文名 / 英文名 / 类型 / 分类（大小写不敏感）。
+  const q = query.trim().toLowerCase();
+
+  // 按分类分组（先按查询过滤，再保留 catalog 内顺序）
   const groups = useMemo(() => {
+    const matched = q
+      ? items.filter((it) =>
+          [it.cnName, it.name, it.type, it.category].some((f) => f.toLowerCase().includes(q)),
+        )
+      : items;
     const map = new Map<string, CatalogItem[]>();
-    for (const it of items) {
+    for (const it of matched) {
       const arr = map.get(it.category) ?? [];
       arr.push(it);
       map.set(it.category, arr);
@@ -57,7 +66,9 @@ export default function ControlPalette({ api }: Props) {
     const known = CATEGORY_ORDER.filter((c) => map.has(c));
     const extra = [...map.keys()].filter((c) => !CATEGORY_ORDER.includes(c));
     return [...known, ...extra].map((c) => [c, map.get(c)!] as const);
-  }, [items]);
+  }, [items, q]);
+
+  const matchCount = useMemo(() => groups.reduce((n, [, list]) => n + list.length, 0), [groups]);
 
   // 点击插入：把控件 elements 克隆到画布视口中央。
   const insert = (it: CatalogItem) => {
@@ -90,8 +101,30 @@ export default function ControlPalette({ api }: Props) {
   return (
     <div className="control-palette">
       <div className="palette-head">控件库（点击插入）</div>
+      <div className="palette-search">
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="搜索控件…（中文/英文/分类）"
+          aria-label="搜索控件"
+        />
+        {query && (
+          <button
+            type="button"
+            className="clear"
+            title="清除搜索"
+            aria-label="清除搜索"
+            onClick={() => setQuery("")}
+          >
+            ×
+          </button>
+        )}
+        {q && <span className="hits">{matchCount} 个结果</span>}
+      </div>
+      {q && groups.length === 0 && <div className="palette-empty">无匹配控件</div>}
       {groups.map(([cat, list]) => {
-        const isOpen = !collapsed[cat];
+        const isOpen = q ? true : !collapsed[cat];
         return (
           <div className="palette-category" key={cat}>
             <button

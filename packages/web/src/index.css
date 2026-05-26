@@ -120,6 +120,70 @@ body {
   z-index: 1;
 }
 
+.palette-search {
+  position: sticky;
+  top: 33px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fafafa;
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  z-index: 1;
+}
+
+.palette-search input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  padding: 5px 8px;
+  font: inherit;
+  font-size: 12px;
+  color: #333;
+  outline: none;
+}
+
+.palette-search input:focus {
+  border-color: #1971c2;
+  box-shadow: 0 0 0 2px rgba(25, 113, 194, 0.15);
+}
+
+.palette-search input::placeholder {
+  color: #aaa;
+}
+
+.palette-search .clear {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: #999;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+.palette-search .clear:hover {
+  color: #555;
+}
+
+.palette-search .hits {
+  flex: 0 0 auto;
+  color: #aaa;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.palette-empty {
+  padding: 18px 10px;
+  text-align: center;
+  color: #aaa;
+  font-size: 12px;
+}
+
 .palette-category {
   border-bottom: 1px solid #eee;
 }
