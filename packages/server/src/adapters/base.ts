@@ -148,3 +148,25 @@ export function extractHtml(raw: string): { html: string; ok: boolean } {
   if (/<[a-z!][\s\S]*>/i.test(t)) return { html: t, ok: true }; // 片段
   return { html: t, ok: false };
 }
+
+/**
+ * 从模型原始输出中提取一个 JSON 对象（text→线框图用：期望拿到布局规格）。
+ * - 优先剥离 ```json ... ``` 代码围栏
+ * - 否则截取第一个 `{` 到最后一个 `}`
+ * 解析失败时 ok=false（调用方兜底报错）。
+ */
+export function extractJson<T = unknown>(raw: string): { json: T | null; ok: boolean } {
+  let t = (raw || "").trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fence) t = fence[1].trim();
+  if (!t.startsWith("{")) {
+    const s = t.indexOf("{");
+    const e = t.lastIndexOf("}");
+    if (s >= 0 && e > s) t = t.slice(s, e + 1);
+  }
+  try {
+    return { json: JSON.parse(t) as T, ok: true };
+  } catch {
+    return { json: null, ok: false };
+  }
+}

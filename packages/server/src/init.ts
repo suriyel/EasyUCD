@@ -11,6 +11,8 @@ import {
   bundledSkillFile,
   skillFile,
   skillName,
+  wireframeSkillFile,
+  bundledWireframeSkillFile,
 } from "./paths.ts";
 import { ensureModelsInit } from "./profiles.ts";
 
@@ -57,5 +59,14 @@ export async function readSkill(): Promise<string> {
     return await readFile(skillFile, "utf8");
   } catch {
     return await readFile(bundledSkillFile, "utf8");
+  }
+}
+
+/** 读取「文本→线框图」SKILL：优先用户可编辑副本，缺失时回退内置模板。 */
+export async function readWireframeSkill(): Promise<string> {
+  try {
+    return await readFile(wireframeSkillFile, "utf8");
+  } catch {
+    return await readFile(bundledWireframeSkillFile, "utf8");
   }
 }

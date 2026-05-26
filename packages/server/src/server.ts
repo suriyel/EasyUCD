@@ -12,6 +12,7 @@ import { ensureInit } from "./init.ts";
 import { webDist } from "./paths.ts";
 import { isMock } from "./adapters/index.ts";
 import { generateRoutes } from "./routes/generate.ts";
+import { generateWireframeRoutes } from "./routes/generate-wireframe.ts";
 import { configRoutes } from "./routes/config.ts";
 import { skillsRoutes } from "./routes/skills.ts";
 import { healthRoutes } from "./routes/health.ts";
@@ -45,6 +46,7 @@ async function main(): Promise<void> {
   }
 
   await app.register(generateRoutes);
+  await app.register(generateWireframeRoutes);
   await app.register(configRoutes);
   await app.register(skillsRoutes);
   await app.register(healthRoutes);

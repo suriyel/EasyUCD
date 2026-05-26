@@ -19,6 +19,35 @@ function renderEl(e: El): string {
   return `<div class="el" data-type="${escapeHtml(e.type)}"><strong>${label}</strong><small>${meta}</small></div>`;
 }
 
+/**
+ * Mock：根据文字描述拼一个占位线框布局规格（不调用模型）。
+ * 用于 /api/generate-wireframe 的无配额全链路联调。把每一行非空文本当成一个表单项，
+ * 整体放进一个 Page 容器里，演示「文本→画板」链路是通的。
+ */
+export function mockWireframeControls(text: string): { controls: unknown[] } {
+  const lines = String(text)
+    .split(/\r?\n/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 10);
+  const pad = 24;
+  const innerW = 400 - pad * 2;
+  const controls: unknown[] = [];
+  let y = pad;
+
+  controls.push({ type: "Heading", x: pad, y, w: innerW, h: 36, text: lines[0] || "Mock 线框" });
+  y += 56;
+  for (const line of lines.slice(1)) {
+    controls.push({ type: "Input", x: pad, y, w: innerW, h: 40, text: line });
+    y += 56;
+  }
+  controls.push({ type: "Button", x: pad, y, w: innerW, h: 44, text: "提交" });
+  y += 60;
+
+  const page = { type: "Page", x: 0, y: 0, w: 400, h: Math.max(y + pad, 200), text: "Mock 页面" };
+  return { controls: [page, ...controls] };
+}
+
 export class MockAdapter implements CliAdapter {
   name = "mock";
 

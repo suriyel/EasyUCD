@@ -1,0 +1,17 @@
+{
+  "skill_name": "text-to-excalidraw",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "用文本生成一个登录页的 excalidraw 线框：标题、用户名输入框、密码输入框、记住我勾选、忘记密码链接、登录按钮。",
+      "expected_output": "调用 text-to-excalidraw skill，规划出 Page 容器 + Heading + Input + Password + Checkbox + Link + Button 等控件并定坐标，运行 build-scene.mjs 产出一个合法 .excalidraw 场景文件（type=excalidraw, version=2）。每个控件元素带 customData.controlType，矩形与文字共享同一 groupIds[0]，Page 矩形在坐标上包住其它控件。文件可在 excalidraw.com 打开。",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "帮我画一个后台管理的列表页线框图，要有顶部导航、面包屑、一个带表头的表格、和右上角的新增按钮，生成 .excalidraw。",
+      "expected_output": "调用 text-to-excalidraw skill，规划出 Page/Header/Nav/Breadcrumb/Table/Button 等控件，竖向分区（导航在上、面包屑次之、表格主体），Button 与导航同行（y 接近）。运行 build-scene.mjs 产出合法 .excalidraw，控件均带 controlType 且容器坐标包住子控件。",
+      "files": []
+    }
+  ]
+}

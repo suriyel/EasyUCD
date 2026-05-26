@@ -92,6 +92,49 @@ body {
   border-top: 1px solid #e0e0e0;
 }
 
+/* 文本 → 线框图 输入区 */
+.t2w-wrap {
+  border-top: 1px solid #e0e0e0;
+  padding: 8px 12px;
+}
+
+.t2w-wrap label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.t2w-wrap textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 52px;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.t2w-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.t2w-hint {
+  font-size: 12px;
+  color: #2f9e44;
+}
+
+.t2w-error {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #c92a2a;
+  white-space: pre-wrap;
+}
+
 button {
   font: inherit;
   font-size: 13px;

@@ -144,3 +144,24 @@ export function generate(payload: {
     body: JSON.stringify(payload),
   }).then((r) => parse<GenerateResponse>(r));
 }
+
+export type WireframeResponse = {
+  /** 完整的 Excalidraw 元素数组，可直接 updateScene 注入画板 */
+  elements: unknown[];
+  count: number;
+  elapsedMs: number;
+  tokensUsed: number;
+  warning?: string;
+};
+
+// 文本 → 线框图：把文字描述送后端，拿回可注入画板的 Excalidraw 元素。
+export function generateWireframe(payload: {
+  text: string;
+  cli: string;
+}): Promise<WireframeResponse> {
+  return fetch("/api/generate-wireframe", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(payload),
+  }).then((r) => parse<WireframeResponse>(r));
+}

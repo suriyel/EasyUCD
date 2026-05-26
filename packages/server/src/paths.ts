@@ -22,4 +22,9 @@ export const skillFile = join(skillDir, "SKILL.md");
 export const bundledSkillsDir = join(repoRoot, "assets", "skills");
 export const bundledSkillFile = join(bundledSkillsDir, skillName, "SKILL.md");
 
+// 文本 → 线框图（text→wireframe）的服务端提示资产：让模型只输出紧凑布局规格 JSON。
+export const wireframeSkillName = "text-to-wireframe";
+export const wireframeSkillFile = join(skillsDir, wireframeSkillName, "SKILL.md");
+export const bundledWireframeSkillFile = join(bundledSkillsDir, wireframeSkillName, "SKILL.md");
+
 export const webDist = join(repoRoot, "packages", "web", "dist");

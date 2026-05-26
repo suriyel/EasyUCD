@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ExcalidrawCanvas, { type ExcalidrawAPI } from "./components/ExcalidrawCanvas";
 import NotesTextarea from "./components/NotesTextarea";
+import TextToWireframe from "./components/TextToWireframe";
 import CliSelector from "./components/CliSelector";
 import ModelConfig from "./components/ModelConfig";
 import PreviewIframe from "./components/PreviewIframe";
@@ -42,6 +43,11 @@ export default function App() {
   }, []);
 
   const pushRecent = (r: Recent) => setRecent((prev) => [r, ...prev].slice(0, 5));
+
+  // 文本→线框图：把后端生成的 Excalidraw 元素注入画板（替换当前场景）。
+  const applyWireframe = (elements: unknown[]) => {
+    apiRef.current?.updateScene({ elements });
+  };
 
   const onGenerate = async () => {
     const api = apiRef.current;
@@ -92,6 +98,7 @@ export default function App() {
             }}
           />
         </div>
+        <TextToWireframe cli={cli} onApply={applyWireframe} />
         <NotesTextarea value={notes} onChange={setNotes} />
         <div className="actions-bar">
           <button className="generate-btn" disabled={status === "loading"} onClick={onGenerate}>
