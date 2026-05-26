@@ -37,6 +37,19 @@ EasyUCD/
 - **生成 HTML 仍需 CLI**：实际生成依赖目标机安装 Claude Code / OpenCode CLI（或走 mock 模式）；
   本启动器只负责起服务，不打包这些第三方 CLI。
 
+## 图标
+
+两个 exe 的图标来自 `assets/icons/EasyUCD.ico`，通过 `tools/launcher/` 与 `tools/sfx/` 下的
+`app.rc` + 预生成的 `rsrc_windows_amd64.syso` 资源嵌入——`go build` 会自动包含同目录的 `.syso`，
+无需打包时额外装工具。换图标后重新生成（需 mingw 的 `windres`）：
+
+```bash
+windres -F pe-x86-64 -I assets/icons -i tools/launcher/app.rc -O coff -o tools/launcher/rsrc_windows_amd64.syso
+windres -F pe-x86-64 -I assets/icons -i tools/sfx/app.rc      -O coff -o tools/sfx/rsrc_windows_amd64.syso
+```
+
+网页 favicon 为 `packages/web/public/favicon.svg`（+ `.ico` 兜底），在 `packages/web/index.html` 引用。
+
 ## 注意
 
 - `tools/sfx/payload.zip` 是打包脚本生成的中间产物（已 `.gitignore`）。因此**单独**执行
