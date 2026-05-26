@@ -8,7 +8,7 @@
 // groupIds，且都带 customData.controlType。这样 packages/web/src/lib/simplify.ts
 // 能按 groupIds[0] 正确合并、识别控件类型，打通「文本 → 线框 → HTML」回环。
 //
-// 词汇表（27 种控件）之外的 type 退化为普通几何图形（rectangle/ellipse/diamond/line/arrow/text），
+// 词汇表外的 type 退化为普通几何图形（rectangle/ellipse/diamond/line/arrow/text），
 // 不带 controlType —— simplify.ts 会回退到几何类型，wireframe-to-html 视其为装饰/占位。
 //
 // 本脚本刻意零依赖（纯 Node ESM），字段全集照搬 gen-controls.mjs（已核实 Excalidraw 容错）。
@@ -41,41 +41,107 @@ const nonce = () => Math.floor(rand() * 2 ** 31);
 const STROKE = "#1e1e1e";
 const NOW = 1748000000000; // 固定时间戳，保持产物稳定
 
-// 27 种控件的建议尺寸 / 字号（取自 gen-controls.mjs 的 SPECS），仅在 spec 缺省 w/h 时兜底。
+// 控件建议尺寸 / 字号，仅在 spec 缺省 w/h 时兜底。下方对象体由 control-catalog.mjs 经 gen:controls 生成（标记块内勿手改）。
 const CONTROL_SPECS = {
-  // 容器类
+  // <generated:control-specs>
+  // 容器
   Page: { w: 400, h: 600 },
   Section: { w: 360, h: 200 },
   Card: { w: 240, h: 160 },
   Modal: { w: 320, h: 240 },
-  // 导航类
+  Drawer: { w: 280, h: 600 },
+  Collapse: { w: 320, h: 120 },
+  Splitter: { w: 360, h: 200 },
+  // 导航
   Header: { w: 400, h: 60 },
   Footer: { w: 400, h: 60 },
   Nav: { w: 400, h: 44 },
   Tabs: { w: 320, h: 40 },
   Breadcrumb: { w: 300, h: 24 },
-  // 输入类
+  Menu: { w: 200, h: 240 },
+  Sidebar: { w: 220, h: 600 },
+  Toolbar: { w: 360, h: 44 },
+  Pagination: { w: 240, h: 32 },
+  Steps: { w: 360, h: 48 },
+  Anchor: { w: 160, h: 120 },
+  Dropdown: { w: 160, h: 40 },
+  // 输入
   Input: { w: 240, h: 40 },
   Password: { w: 240, h: 40 },
   Textarea: { w: 240, h: 100 },
   Select: { w: 240, h: 40 },
   Checkbox: { w: 160, h: 24 },
   Radio: { w: 160, h: 24 },
-  Switch: { w: 80, h: 28 },
-  // 展示类
+  Switch: { w: 56, h: 28 },
+  // 表单进阶
+  Slider: { w: 240, h: 24 },
+  NumberInput: { w: 120, h: 40 },
+  DatePicker: { w: 200, h: 40 },
+  TimePicker: { w: 160, h: 40 },
+  DateRange: { w: 280, h: 40 },
+  Upload: { w: 240, h: 120 },
+  Rate: { w: 160, h: 28 },
+  ColorPicker: { w: 160, h: 40 },
+  SearchBox: { w: 240, h: 40 },
+  Cascader: { w: 240, h: 40 },
+  AutoComplete: { w: 240, h: 40 },
+  TagInput: { w: 240, h: 40 },
+  Form: { w: 360, h: 320 },
+  FormItem: { w: 320, h: 56 },
+  // 选择进阶
+  TreeSelect: { w: 240, h: 40 },
+  TreeTable: { w: 320, h: 180 },
+  MultiSelect: { w: 240, h: 40 },
+  CheckboxGroup: { w: 240, h: 96 },
+  RadioGroup: { w: 240, h: 96 },
+  Transfer: { w: 320, h: 180 },
+  Segmented: { w: 240, h: 36 },
+  Mentions: { w: 240, h: 80 },
+  CheckableTag: { w: 72, h: 26 },
+  // 展示
   Heading: { w: 240, h: 36, fontSize: 24 },
   Text: { w: 240, h: 24 },
   Image: { w: 200, h: 140 },
   Icon: { w: 32, h: 32, fontSize: 20 },
   Avatar: { w: 48, h: 48, fontSize: 20 },
-  Badge: { w: 64, h: 24, fontSize: 12 },
-  // 动作类
-  Button: { w: 120, h: 40 },
-  Link: { w: 100, h: 24 },
-  // 集合类
+  Badge: { w: 44, h: 22, fontSize: 12 },
+  Tag: { w: 72, h: 26 },
+  Divider: { w: 320, h: 16 },
+  // 反馈与状态
+  Alert: { w: 320, h: 48 },
+  Toast: { w: 280, h: 64 },
+  Tooltip: { w: 120, h: 32 },
+  Popover: { w: 200, h: 120 },
+  Popconfirm: { w: 220, h: 100 },
+  Progress: { w: 240, h: 12 },
+  ProgressCircle: { w: 64, h: 64, fontSize: 14 },
+  Spinner: { w: 40, h: 40 },
+  Skeleton: { w: 240, h: 80 },
+  Empty: { w: 200, h: 140 },
+  Result: { w: 240, h: 160 },
+  // 数据展示
   List: { w: 240, h: 160 },
   Table: { w: 320, h: 160 },
   Grid: { w: 320, h: 200 },
+  Tree: { w: 240, h: 180 },
+  Timeline: { w: 240, h: 200 },
+  Statistic: { w: 160, h: 80 },
+  Descriptions: { w: 320, h: 160 },
+  Calendar: { w: 280, h: 240 },
+  Carousel: { w: 320, h: 180 },
+  BarChart: { w: 240, h: 160 },
+  LineChart: { w: 240, h: 160 },
+  PieChart: { w: 160, h: 160 },
+  // 动作
+  Button: { w: 120, h: 40 },
+  Link: { w: 100, h: 24 },
+  ButtonGroup: { w: 240, h: 40 },
+  FAB: { w: 56, h: 56, fontSize: 28 },
+  // 媒体
+  Video: { w: 320, h: 180 },
+  Audio: { w: 280, h: 40 },
+  Map: { w: 320, h: 200 },
+  // </generated:control-specs>
 };
 
 // 词汇表外允许的几何类型（小写匹配）。
