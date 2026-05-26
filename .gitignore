@@ -5,3 +5,7 @@ dist/
 .env
 .env.local
 packages/*/node_modules/
+
+# Go 打包产物
+build/
+tools/sfx/payload.zip
