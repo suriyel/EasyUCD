@@ -171,6 +171,18 @@ export const CONTROLS = [
     parts: [box(), txt(12, 11, "Password", { align: "left" }), ell(212, 14, 16, 12), ell(217, 16, 6, 8)],
   },
   {
+    name: "IPInput", cnName: "IP 输入框", type: "IPInput", category: "输入", w: 240, h: 40, label: "192.168.0.1",
+    htmlMapping: "IP 地址输入：四段 `<input inputmode=\"numeric\" maxlength=\"3\">` + `.` 分隔（JS 自动跳段、校验 0–255）",
+    desc: "IP 输入框：四段八位 + 点分隔",
+    parts: [
+      box(),
+      txt(20, 11, "192", { align: "left" }), txt(58, 11, ".", { align: "left" }),
+      txt(78, 11, "168", { align: "left" }), txt(118, 11, ".", { align: "left" }),
+      txt(138, 11, "0", { align: "left" }), txt(160, 11, ".", { align: "left" }),
+      txt(180, 11, "1", { align: "left" }),
+    ],
+  },
+  {
     name: "Textarea", cnName: "多行文本框", type: "Textarea", category: "输入", w: 240, h: 100, label: "Textarea",
     htmlMapping: "`<textarea>`", desc: "多行框：左上占位 + 右下缩放纹",
     parts: [box(), txt(12, 10, "Textarea", { align: "left" }), line(220, 92, 14, -14), line(228, 92, 6, -6)],
@@ -223,9 +235,17 @@ export const CONTROLS = [
     parts: [box(), txt(12, 11, "Start   ~   End", { align: "left" }), rect(250, 10, 20, 20)],
   },
   {
-    name: "Upload", cnName: "上传", type: "Upload", category: "表单进阶", w: 240, h: 120, label: "Upload",
-    htmlMapping: "`<input type=\"file\">`（拖拽上传区）", desc: "上传区：虚线感框 + ↑ + 提示文字",
-    parts: [box(), line(120, 36, 0, 28), line(110, 48, 10, -12), line(130, 48, -10, -12), ctxt("Click or drag to upload", { fontSize: 13, y: 72 })],
+    name: "Upload", cnName: "文件上传", type: "Upload", category: "表单进阶", w: 240, h: 176, label: "Upload",
+    htmlMapping: "`<input type=\"file\">` 拖拽上传区 + 已选文件列表（文件名 + 删除 ×；多选/进度条可选，JS 渐进增强）",
+    desc: "文件上传：虚线拖拽区 + ↑ + 提示 + 已选文件列表（含删除）",
+    parts: [
+      box(),
+      line(120, 22, 0, 26), line(110, 34, 10, -12), line(130, 34, -10, -12),
+      ctxt("Click or drag to upload", { fontSize: 13, y: 54 }),
+      line(0, 96, 240, 0),
+      txt(12, 108, "report.pdf", { align: "left" }), txt(218, 108, "×", { align: "left" }),
+      txt(12, 140, "photo.png", { align: "left" }), txt(218, 140, "×", { align: "left" }),
+    ],
   },
   {
     name: "Rate", cnName: "评分", type: "Rate", category: "表单进阶", w: 160, h: 28, label: "★★★☆☆",
@@ -426,6 +446,21 @@ export const CONTROLS = [
     parts: [box(), line(0, 32, 320, 0), line(0, 64, 320, 0, rep(3, 0, 32)), line(107, 0, 0, 160, rep(2, 106, 0)), txt(8, 7, "Table", { align: "left" })],
   },
   {
+    name: "PagedTable", cnName: "分页表格", type: "PagedTable", category: "数据展示", w: 320, h: 208, label: "Name",
+    htmlMapping: "`<table>`（`<thead>`/`<tbody>`）+ 底部 `<nav aria-label=\"pagination\">` 分页器；JS 翻页（渐进增强，下载后生效）",
+    desc: "分页表格：表头 + 行线 + 列线 + 底部分页条",
+    parts: [
+      box(),
+      line(0, 32, 320, 0),
+      line(0, 64, 320, 0, rep(3, 0, 32)),
+      line(107, 0, 0, 160, rep(2, 106, 0)),
+      line(0, 160, 320, 0),
+      rect(200, 172, 24, 24, rep(4, 28, 0)),
+      txt(8, 7, "Name", { align: "left" }),
+      txt(208, 175, "1", { align: "left" }),
+    ],
+  },
+  {
     name: "Grid", cnName: "网格", type: "Grid", category: "数据展示", w: 320, h: 200, label: "Grid",
     htmlMapping: "`display:grid` 的容器 `<div>` + 网格项", desc: "网格：2×3 网格分隔线",
     parts: [box(), line(0, 100, 320, 0), line(107, 0, 0, 200, rep(2, 106, 0))],
@@ -434,6 +469,20 @@ export const CONTROLS = [
     name: "Tree", cnName: "树", type: "Tree", category: "数据展示", w: 240, h: 180, label: "Root",
     htmlMapping: "树形 `<ul>`（嵌套缩进）", desc: "树：多层级行（缩进 + ▾/▸）",
     parts: [box(), txt(12, 12, "▾ Root", { align: "left" }), txt(32, 40, "▾ Folder", { align: "left" }), txt(52, 68, "File 1", { align: "left" }), txt(52, 96, "File 2", { align: "left" }), txt(32, 124, "▸ Folder 2", { align: "left" })],
+  },
+  {
+    name: "CheckTree", cnName: "可勾选树", type: "CheckTree", category: "数据展示", w: 240, h: 180, label: "Root",
+    htmlMapping: "树形 `<ul>` + 每节点 `<input type=\"checkbox\">`；▾/▸ 折叠；勾父节点级联勾/取消全部子节点、子节点部分选中时父节点 `indeterminate` 半选（JS 渐进增强）",
+    desc: "可勾选树：多层级 + ▾/▸ 折叠 + 复选方块（父子级联勾选）",
+    parts: [
+      box(),
+      rect(28, 12, 14, 14), rect(48, 40, 14, 14), rect(52, 68, 14, 14), rect(52, 96, 14, 14), rect(48, 124, 14, 14),
+      line(31, 19, 3, 4), line(34, 23, 6, -8),
+      txt(48, 12, "Root", { align: "left" }),
+      txt(68, 40, "Folder", { align: "left" }), txt(72, 68, "File 1", { align: "left" }),
+      txt(72, 96, "File 2", { align: "left" }), txt(68, 124, "Folder 2", { align: "left" }),
+      txt(12, 12, "▾", { align: "left" }), txt(32, 40, "▾", { align: "left" }), txt(32, 124, "▸", { align: "left" }),
+    ],
   },
   {
     name: "Timeline", cnName: "时间线", type: "Timeline", category: "数据展示", w: 240, h: 200, label: "Event 1",

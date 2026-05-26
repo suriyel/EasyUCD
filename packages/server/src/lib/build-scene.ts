@@ -72,6 +72,7 @@ const CONTROL_SPECS: Record<string, { w: number; h: number; fontSize?: number }>
   // 输入
   Input: { w: 240, h: 40 },
   Password: { w: 240, h: 40 },
+  IPInput: { w: 240, h: 40 },
   Textarea: { w: 240, h: 100 },
   Select: { w: 240, h: 40 },
   Checkbox: { w: 160, h: 24 },
@@ -83,7 +84,7 @@ const CONTROL_SPECS: Record<string, { w: number; h: number; fontSize?: number }>
   DatePicker: { w: 200, h: 40 },
   TimePicker: { w: 160, h: 40 },
   DateRange: { w: 280, h: 40 },
-  Upload: { w: 240, h: 120 },
+  Upload: { w: 240, h: 176 },
   Rate: { w: 160, h: 28 },
   ColorPicker: { w: 160, h: 40 },
   SearchBox: { w: 240, h: 40 },
@@ -126,8 +127,10 @@ const CONTROL_SPECS: Record<string, { w: number; h: number; fontSize?: number }>
   // 数据展示
   List: { w: 240, h: 160 },
   Table: { w: 320, h: 160 },
+  PagedTable: { w: 320, h: 208 },
   Grid: { w: 320, h: 200 },
   Tree: { w: 240, h: 180 },
+  CheckTree: { w: 240, h: 180 },
   Timeline: { w: 240, h: 200 },
   Statistic: { w: 160, h: 80 },
   Descriptions: { w: 320, h: 160 },

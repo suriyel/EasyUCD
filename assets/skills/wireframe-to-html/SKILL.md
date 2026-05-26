@@ -59,6 +59,7 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 | Dropdown | `<details>` / menu button |
 | Input | `<input type="text">`（text 作 placeholder 或前置 `<label>`） |
 | Password | `<input type="password">` |
+| IPInput | IP 地址输入：四段 `<input inputmode="numeric" maxlength="3">` + `.` 分隔（JS 自动跳段、校验 0–255） |
 | Textarea | `<textarea>` |
 | Select | `<select>` + `<option>` |
 | Checkbox | `<label><input type="checkbox">…</label>` |
@@ -69,7 +70,7 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 | DatePicker | `<input type="date">` |
 | TimePicker | `<input type="time">` |
 | DateRange | 两个 `<input type="date">` |
-| Upload | `<input type="file">`（拖拽上传区） |
+| Upload | `<input type="file">` 拖拽上传区 + 已选文件列表（文件名 + 删除 ×；多选/进度条可选，JS 渐进增强） |
 | Rate | 星级 `role="radiogroup"`（若干 `<input type="radio">`） |
 | ColorPicker | `<input type="color">` |
 | SearchBox | `<input type="search">` |
@@ -108,8 +109,10 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 | Result | 结果页 `<div>`（状态图 + 标题 + 操作） |
 | List | `<ul>` / `<ol>` + `<li>` |
 | Table | `<table>` + `<thead>` / `<tbody>` |
+| PagedTable | `<table>`（`<thead>`/`<tbody>`）+ 底部 `<nav aria-label="pagination">` 分页器；JS 翻页（渐进增强，下载后生效） |
 | Grid | `display:grid` 的容器 `<div>` + 网格项 |
 | Tree | 树形 `<ul>`（嵌套缩进） |
+| CheckTree | 树形 `<ul>` + 每节点 `<input type="checkbox">`；▾/▸ 折叠；勾父节点级联勾/取消全部子节点、子节点部分选中时父节点 `indeterminate` 半选（JS 渐进增强） |
 | Timeline | `<ol>` 时间线（节点 + 内容） |
 | Statistic | 统计卡 `<div>`（标题 + 数值） |
 | Descriptions | `<dl>` + `<dt>` / `<dd>` |
@@ -129,6 +132,7 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 
 - 表单类控件若被同一容器包裹，整体用 `<form>` 包起来更语义化。
 - 控件的 `text` 用作按钮文案、标签、占位符或标题内容。
+- 交互型控件的行为用纯 JS 作渐进增强（应用内预览不执行 JS，下载后单独打开生效）：`CheckTree` 勾选父节点时级联勾选/取消所有子节点并支持 `indeterminate` 半选；`PagedTable` 底部分页器点击翻页；`IPInput` 四段各 0–255 校验并自动跳段。
 
 ## 视觉设计（精美风格）
 

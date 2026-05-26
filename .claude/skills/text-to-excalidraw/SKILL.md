@@ -44,12 +44,12 @@ description: 把一段文字/需求描述生成 Excalidraw 线框图（.excalidr
 |------|------|
 | 容器 | Page(400×600)、Section(360×200)、Card(240×160)、Modal(320×240)、Drawer(280×600)、Collapse(320×120)、Splitter(360×200) |
 | 导航 | Header(400×60)、Footer(400×60)、Nav(400×44)、Tabs(320×40)、Breadcrumb(300×24)、Menu(200×240)、Sidebar(220×600)、Toolbar(360×44)、Pagination(240×32)、Steps(360×48)、Anchor(160×120)、Dropdown(160×40) |
-| 输入 | Input(240×40)、Password(240×40)、Textarea(240×100)、Select(240×40)、Checkbox(160×24)、Radio(160×24)、Switch(56×28) |
-| 表单进阶 | Slider(240×24)、NumberInput(120×40)、DatePicker(200×40)、TimePicker(160×40)、DateRange(280×40)、Upload(240×120)、Rate(160×28)、ColorPicker(160×40)、SearchBox(240×40)、Cascader(240×40)、AutoComplete(240×40)、TagInput(240×40)、Form(360×320)、FormItem(320×56) |
+| 输入 | Input(240×40)、Password(240×40)、IPInput(240×40)、Textarea(240×100)、Select(240×40)、Checkbox(160×24)、Radio(160×24)、Switch(56×28) |
+| 表单进阶 | Slider(240×24)、NumberInput(120×40)、DatePicker(200×40)、TimePicker(160×40)、DateRange(280×40)、Upload(240×176)、Rate(160×28)、ColorPicker(160×40)、SearchBox(240×40)、Cascader(240×40)、AutoComplete(240×40)、TagInput(240×40)、Form(360×320)、FormItem(320×56) |
 | 选择进阶 | TreeSelect(240×40)、TreeTable(320×180)、MultiSelect(240×40)、CheckboxGroup(240×96)、RadioGroup(240×96)、Transfer(320×180)、Segmented(240×36)、Mentions(240×80)、CheckableTag(72×26) |
 | 展示 | Heading(240×36)、Text(240×24)、Image(200×140)、Icon(32×32)、Avatar(48×48)、Badge(44×22)、Tag(72×26)、Divider(320×16) |
 | 反馈与状态 | Alert(320×48)、Toast(280×64)、Tooltip(120×32)、Popover(200×120)、Popconfirm(220×100)、Progress(240×12)、ProgressCircle(64×64)、Spinner(40×40)、Skeleton(240×80)、Empty(200×140)、Result(240×160) |
-| 数据展示 | List(240×160)、Table(320×160)、Grid(320×200)、Tree(240×180)、Timeline(240×200)、Statistic(160×80)、Descriptions(320×160)、Calendar(280×240)、Carousel(320×180)、BarChart(240×160)、LineChart(240×160)、PieChart(160×160) |
+| 数据展示 | List(240×160)、Table(320×160)、PagedTable(320×208)、Grid(320×200)、Tree(240×180)、CheckTree(240×180)、Timeline(240×200)、Statistic(160×80)、Descriptions(320×160)、Calendar(280×240)、Carousel(320×180)、BarChart(240×160)、LineChart(240×160)、PieChart(160×160) |
 | 动作 | Button(120×40)、Link(100×24)、ButtonGroup(240×40)、FAB(56×56) |
 | 媒体 | Video(320×180)、Audio(280×40)、Map(320×200) |
 <!-- /generated:controls -->
