@@ -3,11 +3,12 @@
 // 用户自绘并经原生「添加到资源库」存下的控件（customControls，localStorage）合并进来，
 // 归入「我的控件」分类、置于面板顶部，并可删除。
 // 按分类折叠归档，每个控件显示 SVG 缩略图 + 下方中文名。
-// 交互：点击控件 → 克隆其 elements 注入画布视口中央（再由用户在画布内拖动定位）。
+// 交互：点击控件 → 克隆其 elements（重映射 id/group、保留分组结构）注入画布视口中央，再由用户拖动定位。
 
 import { useEffect, useMemo, useState } from "react";
 import type { ExcalidrawAPI } from "./ExcalidrawCanvas";
-import { CUSTOM_CATEGORY, type CatalogItem, type El } from "../lib/customControls";
+import { CUSTOM_CATEGORY, type CatalogItem } from "../lib/customControls";
+import { cloneElementsForInsert } from "../lib/cloneElements";
 
 type Props = {
   api: ExcalidrawAPI | null;
@@ -68,6 +69,8 @@ export default function ControlPalette({ api, customControls, onDeleteCustom }: 
   const matchCount = useMemo(() => groups.reduce((n, [, list]) => n + list.length, 0), [groups]);
 
   // 点击插入：把控件 elements 克隆到画布视口中央。
+  // 用 cloneElementsForInsert 重映射 id/groupIds（保留分组结构），而非拍平成单一 group——
+  // 否则「多控件组合」会被 simplify 塌缩成单个逻辑控件，生成 HTML 退化（与导出再导入差距大）。
   const insert = (it: CatalogItem) => {
     if (!api) return;
     const st = api.getAppState();
@@ -80,18 +83,7 @@ export default function ControlPalette({ api, customControls, onDeleteCustom }: 
     const tx = Math.round(cx - it.w / 2) + off;
     const ty = Math.round(cy - it.h / 2) + off;
 
-    const tag = `${Date.now().toString(36)}-${seq}`;
-    const gid = `g-${tag}`;
-    const newEls = it.elements.map((el, i) => {
-      const c = structuredClone(el) as El;
-      c.id = `${it.type.toLowerCase()}-${tag}-${i}`;
-      c.groupIds = [gid];
-      c.x = el.x + tx;
-      c.y = el.y + ty;
-      c.seed = Math.floor(Math.random() * 2 ** 31);
-      c.versionNonce = Math.floor(Math.random() * 2 ** 31);
-      return c;
-    });
+    const newEls = cloneElementsForInsert(it.elements, tx, ty);
     api.updateScene({ elements: [...api.getSceneElements(), ...newEls] });
   };
 

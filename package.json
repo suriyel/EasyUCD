@@ -19,7 +19,7 @@
     "start": "node bin/wireframe-to-html.js start",
     "package": "go -C tools run ./packager",
     "gen:controls": "node scripts/gen-controls.mjs",
-    "test": "tsx --test packages/web/src/lib/simplify.test.ts"
+    "test": "tsx --test packages/web/src/lib/simplify.test.ts packages/web/src/lib/cloneElements.test.ts"
   },
   "engines": {
     "node": ">=18"
