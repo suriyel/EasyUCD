@@ -183,6 +183,28 @@ function interpretComposition(spec, groupId) {
   return els;
 }
 
+// 把库项元素（原点 0,0）渲染成缩略图 SVG 字符串（自定义控件面板用；确定性、无 DOM 依赖）。
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function renderSvg(elements, w, h) {
+  const pad = 2;
+  const parts = [];
+  for (const el of elements) {
+    if (el.type === "rectangle") {
+      parts.push(`<rect x="${el.x}" y="${el.y}" width="${el.width}" height="${el.height}" fill="none" stroke="${STROKE}" stroke-width="1"/>`);
+    } else if (el.type === "ellipse") {
+      parts.push(`<ellipse cx="${el.x + el.width / 2}" cy="${el.y + el.height / 2}" rx="${el.width / 2}" ry="${el.height / 2}" fill="none" stroke="${STROKE}" stroke-width="1"/>`);
+    } else if (el.type === "line") {
+      const [, [dx, dy]] = el.points;
+      parts.push(`<line x1="${el.x}" y1="${el.y}" x2="${el.x + dx}" y2="${el.y + dy}" stroke="${STROKE}" stroke-width="1"/>`);
+    } else if (el.type === "text") {
+      parts.push(`<text x="${el.x}" y="${el.y}" font-size="${el.fontSize}" font-family="sans-serif" fill="${STROKE}" dominant-baseline="hanging">${esc(el.text)}</text>`);
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${-pad} ${-pad} ${w + pad * 2} ${h + pad * 2}">${parts.join("")}</svg>`;
+}
+
 function buildItem(spec) {
   const groupId = `grp-${spec.type.toLowerCase()}`;
   return {
@@ -211,6 +233,32 @@ for (const target of libTargets) {
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, libJson, "utf8");
   console.log(`✓ wrote ${lib.libraryItems.length} controls → ${target}`);
+}
+
+// ———————————— 1b) 生成控件目录 catalog.json（自定义分类面板用）————————————
+// 结构：[{ type, name, cnName, category, w, h, svg, elements }]
+//   - svg：缩略图字符串（renderSvg）；elements：点击插入时克隆用（含 customData.controlType）。
+const catalog = CONTROLS.map((c) => {
+  const elements = interpretComposition(c, `grp-${c.type.toLowerCase()}`);
+  return {
+    type: c.type,
+    name: c.name,
+    cnName: c.cnName,
+    category: c.category,
+    w: c.w,
+    h: c.h,
+    svg: renderSvg(elements, c.w, c.h),
+    elements,
+  };
+});
+const catalogJson = JSON.stringify(catalog, null, 2);
+for (const target of [
+  repoFile("assets", "wireframe-controls.catalog.json"),
+  repoFile("packages", "web", "public", "wireframe-controls.catalog.json"),
+]) {
+  mkdirSync(dirname(target), { recursive: true });
+  writeFileSync(target, catalogJson, "utf8");
+  console.log(`✓ wrote catalog (${catalog.length}) → ${target}`);
 }
 
 // ——————————————————————— 2) 标记块同步 ———————————————————————

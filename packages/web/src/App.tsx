@@ -70,7 +70,7 @@ export default function App() {
 
     if (elements.length === 0) {
       setStatus("error");
-      setErrorMsg("画板为空，请先从左侧控件库拖入控件。");
+      setErrorMsg("画板为空，请先点击右侧控件库插入到画布。");
       return;
     }
 
@@ -101,7 +101,7 @@ export default function App() {
         <div className="pane-header">
           <h2>画板</h2>
           <div className="header-controls">
-            <span style={{ color: "#888" }}>从左侧控件库拖拽控件到画布</span>
+            <span style={{ color: "#888" }}>点击右侧控件库插入到画布</span>
             <button className="fullscreen-btn" onClick={() => toggleMax("left")}>
               {maximized === "left" ? "🗗 退出全屏" : "⛶ 全屏"}
             </button>
