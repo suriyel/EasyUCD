@@ -17,6 +17,9 @@ export default function App() {
   const [cli, setCli] = useState("claude");
   const [health, setHealth] = useState<Health | null>(null);
   const [showModelConfig, setShowModelConfig] = useState(false);
+  const [maximized, setMaximized] = useState<null | "left" | "right">(null);
+  const toggleMax = (which: "left" | "right") =>
+    setMaximized((m) => (m === which ? null : which));
 
   const [status, setStatus] = useState<Status>("idle");
   const [html, setHtml] = useState("");
@@ -41,6 +44,16 @@ export default function App() {
   useEffect(() => {
     refreshHealth();
   }, []);
+
+  // 最大化时按 Esc 退出（标题栏按钮始终可见，是主要退出入口）
+  useEffect(() => {
+    if (!maximized) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMaximized(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [maximized]);
 
   const pushRecent = (r: Recent) => setRecent((prev) => [r, ...prev].slice(0, 5));
 
@@ -84,10 +97,15 @@ export default function App() {
 
   return (
     <div className="app">
-      <div className="pane left-pane">
+      <div className={"pane left-pane" + (maximized === "left" ? " maximized" : "")}>
         <div className="pane-header">
           <h2>画板</h2>
-          <span style={{ color: "#888" }}>从左侧控件库拖拽控件到画布</span>
+          <div className="header-controls">
+            <span style={{ color: "#888" }}>从左侧控件库拖拽控件到画布</span>
+            <button className="fullscreen-btn" onClick={() => toggleMax("left")}>
+              {maximized === "left" ? "🗗 退出全屏" : "⛶ 全屏"}
+            </button>
+          </div>
         </div>
         <div className="canvas-wrap">
           <ExcalidrawCanvas
@@ -107,13 +125,16 @@ export default function App() {
         </div>
       </div>
 
-      <div className="pane right-pane">
+      <div className={"pane right-pane" + (maximized === "right" ? " maximized" : "")}>
         <div className="pane-header">
           <h2>HTML 预览</h2>
           <div className="header-controls">
             <CliSelector health={health} cli={cli} onChange={setCli} />
             <button className="model-config-btn" onClick={() => setShowModelConfig(true)}>
               ⚙ 模型配置
+            </button>
+            <button className="fullscreen-btn" onClick={() => toggleMax("right")}>
+              {maximized === "right" ? "🗗 退出全屏" : "⛶ 全屏"}
             </button>
           </div>
         </div>

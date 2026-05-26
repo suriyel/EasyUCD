@@ -37,6 +37,65 @@ body {
   flex: 1 1 50%;
 }
 
+/* 全屏：窗口内最大化。盖住 recent-float(50) 但低于模型配置 modal(100) */
+.pane.maximized {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: #fff;
+  border-right: 0;
+}
+
+.fullscreen-btn {
+  padding: 3px 10px;
+  font-size: 12px;
+}
+
+/* 控件库缩略图：悬停放大预览浮层 */
+.ctl-preview-popup {
+  position: fixed;
+  z-index: 120; /* 高于左栏全屏遮罩(80)，全屏画布上也可见 */
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ctl-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: #666;
+  padding: 0 2px;
+}
+
+.ctl-preview-head button {
+  border: 0;
+  background: transparent;
+  padding: 2px 4px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.ctl-preview-head button.pinned {
+  color: #1971c2;
+}
+
+.ctl-preview-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  min-width: 120px;
+  min-height: 80px;
+}
+
 .pane-header {
   display: flex;
   align-items: center;

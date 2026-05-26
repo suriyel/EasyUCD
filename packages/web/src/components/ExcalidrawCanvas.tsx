@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Excalidraw } from "@excalidraw/excalidraw";
+import ControlPreviewPopup from "./ControlPreviewPopup";
 
 // 仅声明我们用到的 API 方法，避免耦合 Excalidraw 内部类型路径。
 export type ExcalidrawAPI = {
@@ -41,12 +42,15 @@ export default function ExcalidrawCanvas({ onApi }: Props) {
   }, [api]);
 
   return (
-    <Excalidraw
-      excalidrawAPI={(a) => {
-        const typed = a as unknown as ExcalidrawAPI;
-        setApi(typed);
-        onApi(typed);
-      }}
-    />
+    <>
+      <Excalidraw
+        excalidrawAPI={(a) => {
+          const typed = a as unknown as ExcalidrawAPI;
+          setApi(typed);
+          onApi(typed);
+        }}
+      />
+      <ControlPreviewPopup />
+    </>
   );
 }
