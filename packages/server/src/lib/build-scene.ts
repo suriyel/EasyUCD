@@ -84,6 +84,7 @@ const CONTROL_SPECS: Record<string, { w: number; h: number; fontSize?: number }>
   DatePicker: { w: 200, h: 40 },
   TimePicker: { w: 160, h: 40 },
   DateRange: { w: 280, h: 40 },
+  DateTimeRange: { w: 400, h: 40 },
   Upload: { w: 240, h: 176 },
   Rate: { w: 160, h: 28 },
   ColorPicker: { w: 160, h: 40 },

@@ -235,6 +235,12 @@ export const CONTROLS = [
     parts: [box(), txt(12, 11, "Start   ~   End", { align: "left" }), rect(250, 10, 20, 20)],
   },
   {
+    name: "DateTimeRange", cnName: "日期时间范围", type: "DateTimeRange", category: "表单进阶", w: 400, h: 40, label: "YYYY-MM-DD HH:MM ~ YYYY-MM-DD HH:MM",
+    htmlMapping: "两个 `<input type=\"datetime-local\">`（起止日期时间，各含日历选择 + 时分；end 的 min 绑定 start 防止倒置）",
+    desc: "日期时间范围：起止各带日历+时分占位 + 右日历图标",
+    parts: [box(), txt(12, 11, "YYYY-MM-DD HH:MM  ~  YYYY-MM-DD HH:MM", { align: "left" }), rect(370, 10, 20, 20), line(370, 16, 20, 0)],
+  },
+  {
     name: "Upload", cnName: "文件上传", type: "Upload", category: "表单进阶", w: 240, h: 176, label: "Upload",
     htmlMapping: "`<input type=\"file\">` 拖拽上传区 + 已选文件列表（文件名 + 删除 ×；多选/进度条可选，JS 渐进增强）",
     desc: "文件上传：虚线拖拽区 + ↑ + 提示 + 已选文件列表（含删除）",

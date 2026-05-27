@@ -70,6 +70,7 @@ JSON：`elements[{id,type,x,y,w,h,text,parent}]` + `notes`（可空）。
 | DatePicker | `<input type="date">` |
 | TimePicker | `<input type="time">` |
 | DateRange | 两个 `<input type="date">` |
+| DateTimeRange | 两个 `<input type="datetime-local">`（起止日期时间，各含日历选择 + 时分；end 的 min 绑定 start 防止倒置） |
 | Upload | `<input type="file">` 拖拽上传区 + 已选文件列表（文件名 + 删除 ×；多选/进度条可选，JS 渐进增强） |
 | Rate | 星级 `role="radiogroup"`（若干 `<input type="radio">`） |
 | ColorPicker | `<input type="color">` |
