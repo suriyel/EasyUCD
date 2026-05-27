@@ -7,11 +7,13 @@ export type Rect = { left: number; top: number; width: number; height: number };
 // 属性面板的元素样式模型（读 getComputedStyle 得到）。
 export type StyleModel = {
   tag: string; // 元素标签 + 简短 class，仅展示
-  text: string; // 文字内容（仅纯文本叶子可编辑）
+  text: string; // 文字内容 / 表单控件的值（仅纯文本叶子或表单控件可编辑）
   isTextLeaf: boolean; // 是否纯文本叶子（决定文字 textarea 是否启用）
+  valueKind: "field" | "text"; // field=表单控件的 value；text=普通元素 textContent
   color: string; // hex
   background: string; // hex（透明时给个白底占位）
   bgTransparent: boolean;
+  bgIsImage: boolean; // 背景为渐变/图片（background-image 非 none）：仅提示，不当透明处理
   fontSize: number; // px
   fontFamily: string; // 原始 computed 值
   borderWidth: number;
@@ -62,34 +64,69 @@ export function isTextLeaf(el: HTMLElement): boolean {
   return !Array.from(el.childNodes).some((n) => n.nodeType === 1 /* ELEMENT_NODE */);
 }
 
-/** "rgb(r,g,b)" / "rgba(r,g,b,a)" → "#rrggbb"。解析失败回退黑色。 */
-export function rgbToHex(rgb: string): string {
-  const m = /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/.exec(rgb || "");
-  if (!m) return "#000000";
-  const hex = (n: number) => Math.max(0, Math.min(255, n)).toString(16).padStart(2, "0");
-  return "#" + hex(+m[1]) + hex(+m[2]) + hex(+m[3]);
+// 把任意 CSS 颜色（含 oklch/hsl/color()/named/逗号或空格式 rgb 等）解析为 RGBA 通道。
+// 关键：canvas fillStyle 对新式语法（如 oklch）只会原样回显、不归一为 rgb；但把颜色「画」到
+// 1×1 画布再读像素，能拿到浏览器实际渲染的 sRGB 值，覆盖一切可渲染颜色。比正则可靠得多。
+let _cctx: CanvasRenderingContext2D | null | undefined;
+type RGBA = { r: number; g: number; b: number; a: number };
+function parseColorRGBA(input: string): RGBA | null {
+  if (!input || input === "transparent") return { r: 0, g: 0, b: 0, a: 0 };
+  if (_cctx === undefined) {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = 1;
+    _cctx = cv.getContext("2d", { willReadFrequently: true });
+  }
+  if (!_cctx) return null;
+  _cctx.clearRect(0, 0, 1, 1);
+  _cctx.fillStyle = "#000000"; // 哨兵：input 不被接受时保持黑色
+  _cctx.fillStyle = input;
+  _cctx.fillRect(0, 0, 1, 1);
+  const d = _cctx.getImageData(0, 0, 1, 1).data;
+  return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
 }
 
-/** 背景是否完全透明（transparent 或 rgba alpha=0）。仅 rgba 才看第 4 位，避免把 rgb 的蓝色误当 alpha。 */
-function bgAlphaZero(bg: string): boolean {
-  if (!bg || bg === "transparent") return true;
-  const m = /rgba\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*,\s*([\d.]+)\s*\)/.exec(bg);
-  return m ? parseFloat(m[1]) === 0 : false;
+/** 任意 CSS 颜色 → "#rrggbb"。解析失败回退黑色。 */
+export function rgbToHex(input: string): string {
+  const c = parseColorRGBA(input);
+  if (!c) return "#000000";
+  const hex = (n: number) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, "0");
+  return "#" + hex(c.r) + hex(c.g) + hex(c.b);
+}
+
+/** 颜色的 alpha（0–1）。完全透明（transparent / alpha=0）时为 0。 */
+function colorAlpha(input: string): number {
+  const c = parseColorRGBA(input);
+  return c ? c.a : 1;
+}
+
+/** 是否表单控件（其可编辑“值”在 .value，而非 textContent）。
+ *  用 tagName 判断而非 instanceof —— iframe 内元素属于另一 realm，instanceof 父窗口的
+ *  HTMLInputElement 会恒为 false。 */
+function isFormField(el: HTMLElement): el is HTMLInputElement | HTMLTextAreaElement {
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA";
 }
 
 /** 读元素的可编辑样式快照，喂给属性面板展示。 */
 export function readStyleModel(el: HTMLElement): StyleModel {
-  const cs = getComputedStyle(el);
+  // 关键：必须用元素自身文档的视图取 computed 样式。iframe 内元素若用父窗口的
+  // getComputedStyle，部分浏览器会返回默认/空值，导致面板全字段失真。
+  const win = el.ownerDocument.defaultView ?? window;
+  const cs = win.getComputedStyle(el);
   const rect = el.getBoundingClientRect();
   const cls = el.getAttribute("class");
   const tag = el.tagName.toLowerCase() + (cls ? `.${cls.trim().split(/\s+/)[0]}` : "");
+  const field = isFormField(el);
+  const bgAlpha = colorAlpha(cs.backgroundColor);
+  const bgIsImage = cs.backgroundImage !== "none";
   return {
     tag,
-    text: isTextLeaf(el) ? el.textContent ?? "" : "",
-    isTextLeaf: isTextLeaf(el),
+    text: field ? el.value : isTextLeaf(el) ? el.textContent ?? "" : "",
+    isTextLeaf: field || isTextLeaf(el),
+    valueKind: field ? "field" : "text",
     color: rgbToHex(cs.color),
-    background: bgAlphaZero(cs.backgroundColor) ? "#ffffff" : rgbToHex(cs.backgroundColor),
-    bgTransparent: bgAlphaZero(cs.backgroundColor),
+    background: bgAlpha === 0 ? "#ffffff" : rgbToHex(cs.backgroundColor),
+    bgTransparent: bgAlpha === 0 && !bgIsImage,
+    bgIsImage,
     fontSize: Math.round(parseFloat(cs.fontSize) || 0),
     fontFamily: cs.fontFamily,
     borderWidth: Math.round(parseFloat(cs.borderTopWidth) || 0),
@@ -106,7 +143,14 @@ export function readStyleModel(el: HTMLElement): StyleModel {
 /** 把面板补丁写成 inline style（inline 优先级最高，覆盖原 class 样式）。 */
 export function writeStyle(el: HTMLElement, patch: StylePatch) {
   const s = el.style;
-  if (patch.text !== undefined && isTextLeaf(el)) el.textContent = patch.text;
+  if (patch.text !== undefined) {
+    if (isFormField(el)) {
+      el.value = patch.text; // 表单控件改“值”
+      el.setAttribute("value", patch.text); // 反映到属性，使序列化后的 HTML 保留
+    } else if (isTextLeaf(el)) {
+      el.textContent = patch.text;
+    }
+  }
   if (patch.color !== undefined) s.color = patch.color;
   if (patch.background !== undefined) s.background = patch.background;
   if (patch.fontSize !== undefined) s.fontSize = `${patch.fontSize}px`;

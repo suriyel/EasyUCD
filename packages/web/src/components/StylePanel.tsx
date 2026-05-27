@@ -59,7 +59,7 @@ export default function StylePanel({ model, onChange, onDeselect }: Props) {
       </div>
 
       <div className="field">
-        <span>文字内容</span>
+        <span>{model.valueKind === "field" ? "值" : "文字内容"}</span>
         <textarea
           rows={2}
           value={model.text}
@@ -111,6 +111,9 @@ export default function StylePanel({ model, onChange, onDeselect }: Props) {
             透明
           </label>
         </div>
+        {model.bgIsImage && (
+          <div className="style-note">背景为渐变/图片，此处仅能用纯色覆盖</div>
+        )}
       </div>
 
       <div className="field-row">
