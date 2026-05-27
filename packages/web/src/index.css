@@ -464,6 +464,244 @@ button:disabled {
   padding: 24px;
 }
 
+/* ---------- 预览可视化编辑 ---------- */
+
+/* 编辑模式下：预览区(flex) + 右侧属性面板(固定栏) */
+.preview-stage {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.edit-toggle.on {
+  background: #1971c2;
+  color: #fff;
+  border-color: #1971c2;
+  font-weight: 600;
+}
+
+.edit-hint {
+  font-size: 12px;
+  color: #888;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* 拖拽/缩放进行中：iframe 让出指针，使 window 的 pointermove 在预览区上持续触发 */
+.preview-wrap.dragging iframe {
+  pointer-events: none;
+}
+
+/* 选中覆盖层（父级 DOM，叠在 .preview-wrap 上，不进 iframe） */
+.sel-overlay {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+  outline: 1px solid #1971c2;
+  z-index: 10;
+}
+
+.ucd-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border: 1px solid #1971c2;
+  border-radius: 1px;
+  pointer-events: auto;
+  z-index: 11;
+}
+
+.ucd-handle[data-dir="nw"] {
+  left: -4px;
+  top: -4px;
+  cursor: nwse-resize;
+}
+.ucd-handle[data-dir="n"] {
+  left: 50%;
+  top: -4px;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+.ucd-handle[data-dir="ne"] {
+  right: -4px;
+  top: -4px;
+  cursor: nesw-resize;
+}
+.ucd-handle[data-dir="e"] {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+.ucd-handle[data-dir="se"] {
+  right: -4px;
+  bottom: -4px;
+  cursor: nwse-resize;
+}
+.ucd-handle[data-dir="s"] {
+  left: 50%;
+  bottom: -4px;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+.ucd-handle[data-dir="sw"] {
+  left: -4px;
+  bottom: -4px;
+  cursor: nesw-resize;
+}
+.ucd-handle[data-dir="w"] {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+/* 属性面板（参考 .control-palette 固定栏） */
+.style-panel {
+  flex: 0 0 220px;
+  width: 220px;
+  height: 100%;
+  overflow-y: auto;
+  border-left: 1px solid #e0e0e0;
+  background: #fafafa;
+  font-size: 12px;
+  padding: 8px 10px 16px;
+}
+
+.style-empty {
+  color: #aaa;
+  text-align: center;
+  padding: 24px 8px;
+  line-height: 1.6;
+}
+
+.style-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.style-tag {
+  flex: 1 1 auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.style-deselect {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  color: #999;
+  font-size: 15px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.style-deselect:hover {
+  color: #555;
+}
+
+.style-panel .field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.style-panel .field > span {
+  color: #666;
+}
+
+.style-panel .field-row {
+  display: flex;
+  gap: 8px;
+}
+
+.style-panel .field-row .field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.style-panel input[type="text"],
+.style-panel input[type="number"],
+.style-panel select,
+.style-panel textarea {
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  min-width: 0;
+}
+
+.style-panel textarea {
+  resize: vertical;
+}
+
+.style-panel .color-row,
+.style-panel .border-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.style-panel input[type="color"] {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.style-panel .color-row .hex {
+  flex: 1 1 auto;
+}
+
+.style-panel .border-row input[type="number"] {
+  flex: 0 0 52px;
+  width: 52px;
+}
+
+.style-panel .border-row select {
+  flex: 1 1 auto;
+}
+
+.style-panel .chk {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.style-panel .chk input {
+  width: auto;
+  margin: 0;
+}
+
+.style-hint {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #eee;
+  color: #aaa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
 .statusbar {
   display: flex;
   align-items: center;

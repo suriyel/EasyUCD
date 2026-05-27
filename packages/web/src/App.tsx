@@ -4,7 +4,7 @@ import NotesTextarea from "./components/NotesTextarea";
 import TextToWireframe from "./components/TextToWireframe";
 import CliSelector from "./components/CliSelector";
 import ModelConfig from "./components/ModelConfig";
-import PreviewIframe from "./components/PreviewIframe";
+import PreviewEditor from "./components/PreviewEditor";
 import StatusBar, { type Status } from "./components/StatusBar";
 import { simplify, type RawElement } from "./lib/simplify";
 import { ApiError, generate, getHealth, type Health } from "./api";
@@ -13,6 +13,8 @@ type Recent = { cli: string; status: "done" | "error"; elapsedMs?: number };
 
 export default function App() {
   const apiRef = useRef<ExcalidrawAPI | null>(null);
+  // 右侧预览是否被手动编辑过（由 PreviewEditor 上报），用于「重新生成时提示覆盖」。
+  const editedRef = useRef(false);
   const [notes, setNotes] = useState("");
   const [cli, setCli] = useState("claude");
   const [health, setHealth] = useState<Health | null>(null);
@@ -71,6 +73,14 @@ export default function App() {
     if (elements.length === 0) {
       setStatus("error");
       setErrorMsg("画板为空，请先点击右侧控件库插入到画布。");
+      return;
+    }
+
+    // 已对预览做过手动编辑时，重新生成会覆盖这些修改，先确认。
+    if (
+      editedRef.current &&
+      !window.confirm("检测到你对预览做过手动编辑，重新生成将覆盖这些修改。是否继续？")
+    ) {
       return;
     }
 
@@ -138,7 +148,13 @@ export default function App() {
             </button>
           </div>
         </div>
-        <PreviewIframe html={html} warning={warning} />
+        <PreviewEditor
+          generatedHtml={html}
+          warning={warning}
+          onEditedChange={(e) => {
+            editedRef.current = e;
+          }}
+        />
         <StatusBar status={status} info={info} error={errorMsg} />
       </div>
 
